@@ -1,67 +1,170 @@
 package com.compmovil.ejemplo01.controllers;
 
 import android.os.Bundle;
-import android.view.View;
-import android.view.Menu;
+import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.compmovil.ejemplo01.R;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.navigation.NavigationView;
+import com.compmovil.ejemplo01.fragments.MedicosFragment;
+import com.compmovil.ejemplo01.fragments.PacientesFragment;
+import com.compmovil.ejemplo01.fragments.PerfilFragment;
+import com.compmovil.ejemplo01.fragments.TurnosFragment;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.compmovil.ejemplo01.databinding.ActivityMainBinding;
-
+/**
+ * HomeActivity
+ * ------------------------------------------------------------------
+ * Activity principal post-login. Contiene el BottomNavigationView
+ * y un FragmentContainerView donde se cargan los 4 fragmentos:
+ *   - TurnosFragment    (pantalla de inicio)
+ *   - PacientesFragment
+ *   - MedicosFragment
+ *   - PerfilFragment
+ *
+ * Cómo se usa desde LoginActivity:
+ *   Intent intent = new Intent(this, HomeActivity.class);
+ *   startActivity(intent);
+ *   finish(); // para que el usuario no vuelva al login con el botón Atrás
+ * ------------------------------------------------------------------
+ */
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration mAppBarConfiguration;
-    private ActivityMainBinding binding;
+    // ── Componentes de UI ──────────────────────────────────────────
+    private BottomNavigationView bottomNav;
+    private MaterialToolbar toolbar;
+
+    // ── Títulos del Toolbar según fragmento activo ─────────────────
+    private static final String TITULO_TURNOS    = "Turnos";
+    private static final String TITULO_PACIENTES = "Pacientes";
+    private static final String TITULO_MEDICOS   = "Médicos";
+    private static final String TITULO_PERFIL    = "Mi Perfil";
+
+    // ── Clave para guardar el ítem seleccionado ante rotación ──────
+    private static final String KEY_NAV_ITEM = "nav_item_seleccionado";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        // 1. Enlazar vistas
+        toolbar   = findViewById(R.id.toolbar);
+        bottomNav = findViewById(R.id.bottom_navigation);
 
-        setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
+        // 2. Configurar Toolbar como ActionBar de soporte
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        // 3. Listener del BottomNavigationView
+        bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .setAnchorView(R.id.fab).show();
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+
+                if (itemId == R.id.nav_turnos) {
+                    cargarFragmento(new TurnosFragment(), TITULO_TURNOS);
+                    return true;
+
+                } else if (itemId == R.id.nav_pacientes) {
+                    cargarFragmento(new PacientesFragment(), TITULO_PACIENTES);
+                    return true;
+
+                } else if (itemId == R.id.nav_medicos) {
+                    cargarFragmento(new MedicosFragment(), TITULO_MEDICOS);
+                    return true;
+
+                } else if (itemId == R.id.nav_perfil) {
+                    cargarFragmento(new PerfilFragment(), TITULO_PERFIL);
+                    return true;
+                }
+
+                return false;
             }
         });
-        DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_mis_turnos, R.id.nav_buscar_medicos, R.id.nav_cerrar_sesion)
-                .setOpenableLayout(drawer)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+
+        // 4. Determinar qué fragmento mostrar al iniciar (o restaurar tras rotación)
+        if (savedInstanceState != null) {
+            // Restaurar ítem seleccionado antes de rotar pantalla
+            int itemId = savedInstanceState.getInt(KEY_NAV_ITEM, R.id.nav_turnos);
+            bottomNav.setSelectedItemId(itemId);
+        } else {
+            // Primera apertura: mostrar Turnos por defecto
+            bottomNav.setSelectedItemId(R.id.nav_turnos);
+        }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    /**
+     * Reemplaza el fragmento en el FragmentContainerView y actualiza el título del Toolbar.
+     *
+     * @param fragment El fragmento a mostrar
+     * @param titulo   El título que aparecerá en el Toolbar
+     */
+    private void cargarFragmento(Fragment fragment, String titulo) {
+        // Actualizar título del toolbar
+        toolbar.setTitle(titulo);
+
+        // Reemplazar fragmento con transacción
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragment_container, fragment);
+        ft.commit();
     }
 
+    /**
+     * Guardar el ítem seleccionado para sobrevivir rotaciones de pantalla.
+     */
     @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_NAV_ITEM, bottomNav.getSelectedItemId());
+    }
+
+    /**
+     * Manejo del menú del Toolbar (ícono "+" y overflow "Cerrar sesión")
+     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_nuevo) {
+            // Delegar la acción "Nuevo" al fragmento activo según el destino actual
+            int navItem = bottomNav.getSelectedItemId();
+            if (navItem == R.id.nav_turnos) {
+                // TODO: abrir diálogo o Activity para nuevo turno
+            } else if (navItem == R.id.nav_pacientes) {
+                // TODO: abrir diálogo o Activity para nuevo paciente
+            } else if (navItem == R.id.nav_medicos) {
+                // TODO: abrir diálogo o Activity para nuevo médico
+            }
+            return true;
+
+        } else if (id == R.id.action_cerrar_sesion) {
+            cerrarSesion();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Cierra la sesión y vuelve a la LandingActivity.
+     * Limpia el back stack para que el usuario no pueda volver con Atrás.
+     */
+    private void cerrarSesion() {
+        // TODO: limpiar SharedPreferences o token de sesión si los usás
+        android.content.Intent intent = new android.content.Intent(this, LandingActivity.class);
+        intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+                | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }

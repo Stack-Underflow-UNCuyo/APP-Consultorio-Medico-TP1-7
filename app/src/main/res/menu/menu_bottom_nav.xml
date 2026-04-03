@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Menú de navegación inferior - Consultorios Mendoza
+    Ubicación: res/menu/menu_bottom_nav.xml
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_turnos"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="Turnos" />
+
+    <item
+        android:id="@+id/nav_pacientes"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Pacientes" />
+
+    <item
+        android:id="@+id/nav_medicos"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Médicos" />
+
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="Perfil" />
+
+</menu>

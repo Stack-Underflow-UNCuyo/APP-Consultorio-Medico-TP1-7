@@ -18,7 +18,7 @@ import com.compmovil.ejemplo01.ui.mis_turnos.placeholder.PlaceholderContent;
 /**
  * A fragment representing a list of Items.
  */
-public class ItemFragment extends Fragment {
+public class TurnosFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -29,13 +29,13 @@ public class ItemFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public ItemFragment() {
+    public TurnosFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static ItemFragment newInstance(int columnCount) {
-        ItemFragment fragment = new ItemFragment();
+    public static TurnosFragment newInstance(int columnCount) {
+        TurnosFragment fragment = new TurnosFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);

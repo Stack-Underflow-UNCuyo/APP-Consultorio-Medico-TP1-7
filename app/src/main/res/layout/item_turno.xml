@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Ítem individual de la lista de turnos (RecyclerView)
+    Ubicación: res/layout/item_turno.xml
+    Usado por: TurnosAdapter.java
+-->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:strokeColor="#E0E8F0"
+    app:strokeWidth="1dp"
+    app:rippleColor="#E8F0FE">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Indicador de color según estado (banda lateral izquierda) -->
+        <View
+            android:id="@+id/view_estado_indicator"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="#1A73E8"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Fecha del turno -->
+        <TextView
+            android:id="@+id/tv_fecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lun 14 Jul"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#1A73E8"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/view_estado_indicator"
+            android:layout_marginStart="12dp" />
+
+        <!-- Hora del turno -->
+        <TextView
+            android:id="@+id/tv_hora"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="09:30"
+            android:textSize="13sp"
+            android:textColor="#5A7A99"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Nombre del paciente -->
+        <TextView
+            android:id="@+id/tv_paciente"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Nombre del paciente"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#0D2B4E"
+            app:layout_constraintTop_toBottomOf="@+id/tv_fecha"
+            app:layout_constraintStart_toEndOf="@+id/view_estado_indicator"
+            app:layout_constraintEnd_toStartOf="@+id/chip_estado"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="8dp" />
+
+        <!-- Chip de estado (PENDIENTE / ATENDIDO / CANCELADO) -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_estado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pendiente"
+            android:textSize="11sp"
+            app:chipBackgroundColor="#E8F4FD"
+            app:chipStrokeColor="#1A73E8"
+            app:chipStrokeWidth="1dp"
+            android:textColor="#1A73E8"
+            app:chipMinHeight="24dp"
+            style="@style/Widget.MaterialComponents.Chip.Entry"
+            app:layout_constraintTop_toBottomOf="@+id/tv_hora"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="2dp" />
+
+        <!-- Médico asignado -->
+        <TextView
+            android:id="@+id/tv_medico"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Dr. Nombre Apellido · Especialidad"
+            android:textSize="13sp"
+            android:textColor="#5A7A99"
+            app:layout_constraintTop_toBottomOf="@+id/tv_paciente"
+            app:layout_constraintStart_toEndOf="@+id/view_estado_indicator"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="8dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

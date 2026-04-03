@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Fragmento: Médicos
-    Ubicación: res/layout/fragment_medicos.xml
-    Muestra: filtro por especialidad + lista de médicos
+    Fragmento: Pacientes
+    Ubicación: res/layout/fragment_pacientes.xml
+    Muestra: buscador + lista de pacientes registrados
 -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -27,11 +27,11 @@
             <!-- ============================================= -->
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_buscar_medico"
+                android:id="@+id/til_buscar_paciente"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Buscar médico o especialidad..."
+                android:hint="Buscar paciente..."
                 app:boxCornerRadiusTopStart="14dp"
                 app:boxCornerRadiusTopEnd="14dp"
                 app:boxCornerRadiusBottomStart="14dp"
@@ -48,7 +48,7 @@
                 android:layout_marginTop="20dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_buscar_medico"
+                    android:id="@+id/et_buscar_paciente"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
@@ -59,74 +59,24 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- ============================================= -->
-            <!--  FILTROS POR ESPECIALIDAD (Chips)             -->
-            <!-- ============================================= -->
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipgroup_especialidad"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="14dp"
-                android:layout_marginBottom="6dp"
-                app:singleSelection="true"
-                app:selectionRequired="true">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_esp_todos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Todos"
-                    android:textSize="12sp"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
-                    android:checked="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_esp_clinica"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Clínica"
-                    android:textSize="12sp"
-                    style="@style/Widget.MaterialComponents.Chip.Filter" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_esp_cardiologia"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Cardiología"
-                    android:textSize="12sp"
-                    style="@style/Widget.MaterialComponents.Chip.Filter" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_esp_pediatria"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pediatría"
-                    android:textSize="12sp"
-                    style="@style/Widget.MaterialComponents.Chip.Filter" />
-
-            </com.google.android.material.chip.ChipGroup>
-
-            <!-- Contador -->
+            <!-- Contador de resultados -->
             <TextView
-                android:id="@+id/tv_count_medicos"
+                android:id="@+id/tv_count_pacientes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 médicos registrados"
+                android:text="0 pacientes registrados"
                 android:textSize="12sp"
                 android:textColor="#5A7A99"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="6dp" />
 
             <!-- ============================================= -->
-            <!--  LISTA DE MÉDICOS (RecyclerView)              -->
+            <!--  LISTA DE PACIENTES (RecyclerView)            -->
             <!-- ============================================= -->
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_medicos"
+                android:id="@+id/rv_pacientes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="16dp"
@@ -136,7 +86,7 @@
 
             <!-- Estado vacío -->
             <LinearLayout
-                android:id="@+id/layout_empty_medicos"
+                android:id="@+id/layout_empty_pacientes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -147,13 +97,13 @@
                 <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:src="@android:drawable/ic_menu_search"
+                    android:src="@android:drawable/ic_menu_myplaces"
                     android:tint="#C5D8EE" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No hay médicos registrados"
+                    android:text="No hay pacientes registrados"
                     android:textSize="15sp"
                     android:textColor="#5A7A99"
                     android:layout_marginTop="12dp" />
@@ -163,14 +113,14 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- FAB: Nuevo médico -->
+    <!-- FAB: Nuevo paciente -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_nuevo_medico"
+        android:id="@+id/fab_nuevo_paciente"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="20dp"
-        android:contentDescription="Nuevo médico"
+        android:contentDescription="Nuevo paciente"
         android:src="@android:drawable/ic_input_add"
         app:backgroundTint="#1A73E8"
         app:tint="#FFFFFF"

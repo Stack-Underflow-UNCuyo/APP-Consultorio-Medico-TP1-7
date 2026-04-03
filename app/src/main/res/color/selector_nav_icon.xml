@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Selector de color para íconos del BottomNavigationView
+    Ubicación: res/color/selector_nav_icon.xml
+    - Activo (selected): azul primario #1A73E8
+    - Inactivo: gris azulado #5A7A99
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#1A73E8" android:state_checked="true" />
+    <item android:color="#5A7A99" />
+</selector>

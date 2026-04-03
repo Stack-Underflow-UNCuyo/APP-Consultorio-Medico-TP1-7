@@ -9,5 +9,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".ui.mis_turnos.ItemFragment"
-    tools:listitem="@layout/fragment_item" />
+    tools:context=".ui.mis_turnos.TurnosFragment"
+    tools:listitem="@layout/fragment_turnos" />
