@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F4F8"
+    android:fillViewport="true"
+    tools:context=".controllers.RegisterActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="32dp">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Volver"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            app:tint="#0D2B4E" />
+
+        <TextView
+            android:id="@+id/tv_titulo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Crear cuenta"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="#0D2B4E"
+            app:layout_constraintTop_toBottomOf="@+id/btn_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="28dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp" />
+
+        <TextView
+            android:id="@+id/tv_subtitulo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Completá tus datos para comenzar a gestionar tus turnos"
+            android:textSize="15sp"
+            android:textColor="#5A7A99"
+            app:layout_constraintTop_toBottomOf="@+id/tv_titulo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp" />
+
+        <TextView
+            android:id="@+id/tv_seccion_personal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="DATOS PERSONALES"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="#1A73E8"
+            android:letterSpacing="0.12"
+            app:layout_constraintTop_toBottomOf="@+id/tv_subtitulo"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="32dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_nombre"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Nombre"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#1A73E8"
+            app:hintTextColor="#1A73E8"
+            app:startIconDrawable="@android:drawable/ic_menu_edit"
+            app:startIconTint="#1A73E8"
+            app:layout_constraintTop_toBottomOf="@+id/tv_seccion_personal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_nombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName|textCapWords"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:textColor="#0D2B4E"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_apellido"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Apellido"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#1A73E8"
+            app:hintTextColor="#1A73E8"
+            app:startIconDrawable="@android:drawable/ic_menu_edit"
+            app:startIconTint="#1A73E8"
+            app:layout_constraintTop_toBottomOf="@+id/til_nombre"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_apellido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName|textCapWords"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:textColor="#0D2B4E"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_dni"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="DNI"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#1A73E8"
+            app:hintTextColor="#1A73E8"
+            app:startIconDrawable="@android:drawable/ic_menu_agenda"
+            app:startIconTint="#1A73E8"
+            app:helperText="Sin puntos ni espacios. Ej: 38421567"
+            app:helperTextTextColor="#5A7A99"
+            app:layout_constraintTop_toBottomOf="@+id/til_apellido"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_dni"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="8"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:textColor="#0D2B4E"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_telefono"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Teléfono celular"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#1A73E8"
+            app:hintTextColor="#1A73E8"
+            app:startIconDrawable="@android:drawable/ic_menu_call"
+            app:startIconTint="#1A73E8"
+            app:helperText="Con código de área. Ej: 2615234567"
+            app:helperTextTextColor="#5A7A99"
+            app:layout_constraintTop_toBottomOf="@+id/til_dni"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_telefono"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:textColor="#0D2B4E"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:id="@+id/divider_top"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="#E0E8F0"
+            app:layout_constraintTop_toBottomOf="@+id/til_telefono"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="28dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp" />
+
+        <TextView
+            android:id="@+id/tv_seccion_credenciales"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="CREDENCIALES DE ACCESO"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="#1A73E8"
+            android:letterSpacing="0.12"
+            app:layout_constraintTop_toBottomOf="@+id/divider_top"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="32dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_email"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Correo electrónico"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#1A73E8"
+            app:hintTextColor="#1A73E8"
+            app:startIconDrawable="@android:drawable/ic_dialog_email"
+            app:startIconTint="#1A73E8"
+            app:layout_constraintTop_toBottomOf="@+id/tv_seccion_credenciales"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:textColor="#0D2B4E"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_password"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Contraseña"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#1A73E8"
+            app:hintTextColor="#1A73E8"
+            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+            app:startIconTint="#1A73E8"
+            app:endIconMode="password_toggle"
+            app:endIconTint="#5A7A99"
+            app:helperText="Mínimo 8 caracteres"
+            app:helperTextTextColor="#5A7A99"
+            app:layout_constraintTop_toBottomOf="@+id/til_email"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:textColor="#0D2B4E"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_confirm_password"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Confirmar contraseña"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#1A73E8"
+            app:hintTextColor="#1A73E8"
+            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+            app:startIconTint="#1A73E8"
+            app:endIconMode="password_toggle"
+            app:endIconTint="#5A7A99"
+            app:layout_constraintTop_toBottomOf="@+id/til_password"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_confirm_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
+                android:textColor="#0D2B4E"
+                android:textSize="15sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cb_terminos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Acepto los términos y condiciones de uso"
+            android:textSize="13sp"
+            android:textColor="#5A7A99"
+            app:buttonTint="#1A73E8"
+            app:layout_constraintTop_toBottomOf="@+id/til_confirm_password"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="32dp" />
+
+        <Button
+            android:id="@+id/btn_register_submit"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:text="Crear cuenta"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#1A73E8"
+            android:stateListAnimator="@null"
+            app:cornerRadius="12dp"
+            app:layout_constraintTop_toBottomOf="@+id/cb_terminos"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp" />
+
+        <View
+            android:id="@+id/divider_bottom"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="#E0E8F0"
+            app:layout_constraintTop_toBottomOf="@+id/btn_register_submit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="28dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp" />
+
+        <TextView
+            android:id="@+id/tv_ir_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Ya tenés cuenta? Iniciá sesión aquí"
+            android:textSize="14sp"
+            android:textColor="#5A7A99"
+            app:layout_constraintTop_toBottomOf="@+id/divider_bottom"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

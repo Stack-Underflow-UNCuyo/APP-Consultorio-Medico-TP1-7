@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F4F8"
+    tools:context=".controllers.LoginActivity">
+
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@android:drawable/ic_menu_revert"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/volver"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        app:tint="#0D2B4E" />
+
+    <TextView
+        android:id="@+id/tv_bienvenido"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/bienvenido"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="#0D2B4E"
+        app:layout_constraintTop_toBottomOf="@+id/btn_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="28dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp" />
+
+    <TextView
+        android:id="@+id/tv_instruccion"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/ingres_tus_credenciales_para_continuar"
+        android:textSize="15sp"
+        android:textColor="#5A7A99"
+        app:layout_constraintTop_toBottomOf="@+id/tv_bienvenido"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_email"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="32dp"
+        android:hint="@string/correo_electr_nico"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxStrokeColor="#1A73E8"
+        app:hintTextColor="#1A73E8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_instruccion"
+        app:startIconTint="#1A73E8">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress"
+            android:singleLine="true"
+            android:textColor="#0D2B4E"
+            android:textSize="15sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_password"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:hint="@string/contrase_a"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxStrokeColor="#1A73E8"
+        app:endIconMode="password_toggle"
+        app:endIconTint="#5A7A99"
+        app:hintTextColor="#1A73E8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_email"
+        app:startIconTint="#1A73E8">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:textColor="#0D2B4E"
+            android:textSize="15sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/tv_forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/olvidaste_tu_contrase_a"
+        android:textSize="13sp"
+        android:textColor="#1A73E8"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@+id/til_password"
+        app:layout_constraintEnd_toEndOf="@+id/til_password"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="32dp" />
+
+
+    <Button
+        android:id="@+id/btn_login_submit"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:text="@string/ingresar"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#1A73E8"
+        android:stateListAnimator="@null"
+        app:cornerRadius="12dp"
+        app:layout_constraintTop_toBottomOf="@+id/tv_forgot_password"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#E0E8F0"
+        app:layout_constraintTop_toBottomOf="@+id/btn_login_submit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp" />
+
+    <TextView
+        android:id="@+id/tv_ir_registro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_ten_s_cuenta_registrate_aqu"
+        android:textSize="14sp"
+        android:textColor="#5A7A99"
+        app:layout_constraintTop_toBottomOf="@+id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

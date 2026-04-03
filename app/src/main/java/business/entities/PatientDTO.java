@@ -4,7 +4,6 @@ public class PatientDTO extends BaseDTO{
 
     private String name;
     private String lastName;
-    private String email;
     private int dni;
     private int phone;
 
@@ -16,7 +15,6 @@ public class PatientDTO extends BaseDTO{
         super();
         this.name = name;
         this.lastName = lastName;
-        this.email = email;
         this.dni = dni;
         this.phone = phone;
     }
@@ -32,8 +30,5 @@ public class PatientDTO extends BaseDTO{
 
     public int getPhone() { return phone; }
     public void setPhone(int phone) { this.phone = phone; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
 
 }

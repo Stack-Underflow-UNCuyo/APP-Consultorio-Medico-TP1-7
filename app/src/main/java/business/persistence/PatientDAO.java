@@ -28,7 +28,6 @@ public class PatientDAO implements BaseDAO<PatientDTO> {
         values.put("lastname", patient.getLastName());
         values.put("dni", patient.getDni());
         values.put("phone", patient.getPhone());
-        values.put("email", patient.getEmail());
         values.put("active", patient.isActive() ? 1 : 0);
 
         return db.insert("patients", null, values);
@@ -84,7 +83,6 @@ public class PatientDAO implements BaseDAO<PatientDTO> {
         values.put("lastname", patient.getLastName());
         values.put("dni", patient.getDni());
         values.put("phone", patient.getPhone());
-        values.put("email", patient.getEmail());
         values.put("active", patient.isActive() ? 1 : 0);
 
 

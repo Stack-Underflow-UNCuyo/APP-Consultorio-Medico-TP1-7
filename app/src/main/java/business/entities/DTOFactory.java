@@ -12,8 +12,8 @@ public class DTOFactory {
         }
 
         switch (type){
-            case PACIENT:
-                return ensamblerPacient(cursor);
+            case PATIENT:
+                return ensamblerPatient(cursor);
 
             case MEDIC:
                 return ensamblerMedic(cursor);
@@ -26,7 +26,7 @@ public class DTOFactory {
         }
     }
 
-    private static PatientDTO ensamblerPacient(Cursor cursor) {
+    private static PatientDTO ensamblerPatient(Cursor cursor) {
         PatientDTO patient = new PatientDTO();
 
         // get column index

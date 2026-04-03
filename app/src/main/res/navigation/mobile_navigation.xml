@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.compmovil.ejemplo01.ui.home.HomeFragment"
+        android:label="@string/menu_inicio"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/nav_mis_turnos"
+        android:name="com.compmovil.ejemplo01.ui.mis_turnos.ItemFragment"
+        android:label="@string/menu_mis_turnos"
+        tools:layout="@layout/fragment_item_list" />
+    <fragment
+        android:id="@+id/nav_buscar_medicos"
+        android:name="com.compmovil.ejemplo01.ui.buscar_medicos.MedicFragment"
+        android:label="@string/menu_buscar_medicos"
+        tools:layout="@layout/fragment_medic_list" />
+    <fragment
+        android:id="@+id/nav_cerrar_sesion"
+        android:name="com.compmovil.ejemplo01.ui.cerrar_sesion.CerrarSesionFragment"
+        android:label="@string/menu_cerrar_sesion"
+        tools:layout="@layout/fragment_cerrar_sesion" />
+
+
+</navigation>
