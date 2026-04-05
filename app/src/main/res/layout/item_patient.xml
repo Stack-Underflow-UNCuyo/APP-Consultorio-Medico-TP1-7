@@ -22,7 +22,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Avatar con inicial del paciente -->
         <TextView
             android:id="@+id/tv_avatar"
             android:layout_width="44dp"
@@ -32,12 +31,10 @@
             android:textStyle="bold"
             android:textColor="#1A73E8"
             android:gravity="center"
-            android:background="@drawable/bg_avatar"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Nombre completo -->
         <TextView
             android:id="@+id/tv_nombre_paciente"
             android:layout_width="0dp"
@@ -52,7 +49,6 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="8dp" />
 
-        <!-- DNI y teléfono -->
         <TextView
             android:id="@+id/tv_dni_phone"
             android:layout_width="0dp"
@@ -67,18 +63,17 @@
             android:layout_marginTop="3dp"
             android:layout_marginEnd="8dp" />
 
-        <!-- Botón: ver turnos del paciente -->
         <ImageButton
             android:id="@+id/btn_ver_turnos"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@android:drawable/ic_menu_my_calendar"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="#1A73E8"
             android:contentDescription="Ver turnos"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="#1A73E8" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

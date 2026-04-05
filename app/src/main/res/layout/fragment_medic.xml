@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Fragmento: Médicos
-    Ubicación: res/layout/fragment_medicos.xml
-    Muestra: filtro por especialidad + lista de médicos
--->
+
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -21,10 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <!-- ============================================= -->
-            <!--  BUSCADOR                                     -->
-            <!-- ============================================= -->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_buscar_medico"
@@ -58,10 +50,6 @@
                     android:textColor="#0D2B4E" />
 
             </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- ============================================= -->
-            <!--  FILTROS POR ESPECIALIDAD (Chips)             -->
-            <!-- ============================================= -->
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipgroup_especialidad"
@@ -109,7 +97,6 @@
 
             </com.google.android.material.chip.ChipGroup>
 
-            <!-- Contador -->
             <TextView
                 android:id="@+id/tv_count_medicos"
                 android:layout_width="wrap_content"
@@ -121,10 +108,6 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="6dp" />
 
-            <!-- ============================================= -->
-            <!--  LISTA DE MÉDICOS (RecyclerView)              -->
-            <!-- ============================================= -->
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_medicos"
                 android:layout_width="match_parent"
@@ -134,7 +117,6 @@
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="false" />
 
-            <!-- Estado vacío -->
             <LinearLayout
                 android:id="@+id/layout_empty_medicos"
                 android:layout_width="match_parent"
@@ -148,7 +130,7 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:src="@android:drawable/ic_menu_search"
-                    android:tint="#C5D8EE" />
+                    app:tint="#C5D8EE" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -163,7 +145,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- FAB: Nuevo médico -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_nuevo_medico"
         android:layout_width="wrap_content"

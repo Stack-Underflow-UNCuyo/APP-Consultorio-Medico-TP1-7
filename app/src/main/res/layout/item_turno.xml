@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Ítem individual de la lista de turnos (RecyclerView)
-    Ubicación: res/layout/item_turno.xml
-    Usado por: TurnosAdapter.java
--->
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -22,7 +17,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Indicador de color según estado (banda lateral izquierda) -->
+
         <View
             android:id="@+id/view_estado_indicator"
             android:layout_width="4dp"
@@ -32,7 +27,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Fecha del turno -->
+
         <TextView
             android:id="@+id/tv_fecha"
             android:layout_width="wrap_content"
@@ -45,7 +40,7 @@
             app:layout_constraintStart_toEndOf="@+id/view_estado_indicator"
             android:layout_marginStart="12dp" />
 
-        <!-- Hora del turno -->
+
         <TextView
             android:id="@+id/tv_hora"
             android:layout_width="wrap_content"
@@ -56,7 +51,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Nombre del paciente -->
         <TextView
             android:id="@+id/tv_paciente"
             android:layout_width="0dp"
@@ -72,7 +66,7 @@
             android:layout_marginTop="6dp"
             android:layout_marginEnd="8dp" />
 
-        <!-- Chip de estado (PENDIENTE / ATENDIDO / CANCELADO) -->
+
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_estado"
             android:layout_width="wrap_content"
@@ -89,7 +83,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="2dp" />
 
-        <!-- Médico asignado -->
+
         <TextView
             android:id="@+id/tv_medico"
             android:layout_width="0dp"
@@ -103,6 +97,53 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="8dp" />
+
+        <LinearLayout
+            android:id="@+id/layout_chips_fecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_medico"
+            app:layout_constraintStart_toEndOf="@+id/view_estado_indicator"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_hoy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hoy"
+                android:textSize="11sp"
+                app:chipBackgroundColor="#FFF3E0"
+                app:chipStrokeColor="#F9A825"
+                app:chipStrokeWidth="1dp"
+                android:textColor="#E65100"
+                app:chipMinHeight="24dp"
+                app:chipIconVisible="false"
+                style="@style/Widget.MaterialComponents.Chip.Entry"
+                android:layout_marginEnd="6dp"
+                android:visibility="gone" />
+
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_vencido"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vencido"
+                android:textSize="11sp"
+                app:chipBackgroundColor="#F1F3F4"
+                app:chipStrokeColor="#9AA0A6"
+                app:chipStrokeWidth="1dp"
+                android:textColor="#5F6368"
+                app:chipMinHeight="24dp"
+                app:chipIconVisible="false"
+                style="@style/Widget.MaterialComponents.Chip.Entry"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Fragmento: Perfil
-    Ubicación: res/layout/fragment_perfil.xml
-    Muestra: datos del paciente logueado + opciones de cuenta
--->
+
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -18,9 +14,6 @@
         android:orientation="vertical"
         android:paddingBottom="32dp">
 
-        <!-- ============================================= -->
-        <!--  CABECERA CON DATOS DEL USUARIO               -->
-        <!-- ============================================= -->
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -38,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:padding="20dp">
 
-                <!-- Avatar grande con iniciales -->
+
                 <TextView
                     android:id="@+id/tv_avatar_perfil"
                     android:layout_width="72dp"
@@ -48,11 +41,9 @@
                     android:textStyle="bold"
                     android:textColor="#1A73E8"
                     android:gravity="center"
-                    android:background="@drawable/bg_avatar_perfil"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
-                <!-- Nombre completo -->
                 <TextView
                     android:id="@+id/tv_nombre_perfil"
                     android:layout_width="0dp"
@@ -67,7 +58,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp" />
 
-                <!-- Email -->
+
                 <TextView
                     android:id="@+id/tv_email_perfil"
                     android:layout_width="0dp"
@@ -81,7 +72,6 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="4dp" />
 
-                <!-- DNI -->
                 <TextView
                     android:id="@+id/tv_dni_perfil"
                     android:layout_width="0dp"
@@ -95,7 +85,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="2dp" />
 
-                <!-- Botón editar perfil -->
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_editar_perfil"
                     android:layout_width="wrap_content"
@@ -115,10 +105,6 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ============================================= -->
-        <!--  SECCIÓN: Mis turnos (resumen rápido)         -->
-        <!-- ============================================= -->
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -131,7 +117,6 @@
             android:layout_marginTop="28dp"
             android:layout_marginBottom="10dp" />
 
-        <!-- Fila de estadísticas de turnos -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -139,7 +124,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp">
 
-            <!-- Pendientes -->
+
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -173,7 +158,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Atendidos -->
+
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -208,7 +193,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Cancelados -->
+
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -244,9 +229,6 @@
 
         </LinearLayout>
 
-        <!-- ============================================= -->
-        <!--  SECCIÓN: Opciones de cuenta                  -->
-        <!-- ============================================= -->
 
         <TextView
             android:layout_width="wrap_content"
@@ -276,7 +258,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Opción: Cambiar contraseña -->
+
                 <LinearLayout
                     android:id="@+id/option_cambiar_password"
                     android:layout_width="match_parent"
@@ -290,7 +272,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_lock_idle_lock"
-                        android:tint="#5A7A99" />
+                        app:tint="#5A7A99" />
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -303,14 +285,14 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@android:drawable/ic_media_next"
-                        android:tint="#AAB8C8" />
+                        app:tint="#AAB8C8" />
                 </LinearLayout>
 
-                <!-- Divisor -->
+
                 <View android:layout_width="match_parent" android:layout_height="1dp"
                     android:background="#F0F4F8" android:layout_marginStart="16dp" />
 
-                <!-- Opción: Notificaciones -->
+
                 <LinearLayout
                     android:id="@+id/option_notificaciones"
                     android:layout_width="match_parent"
@@ -324,7 +306,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_popup_reminder"
-                        android:tint="#5A7A99" />
+                        app:tint="#5A7A99" />
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -341,11 +323,11 @@
                         app:trackTint="#1A73E8" />
                 </LinearLayout>
 
-                <!-- Divisor -->
+
                 <View android:layout_width="match_parent" android:layout_height="1dp"
                     android:background="#F0F4F8" android:layout_marginStart="16dp" />
 
-                <!-- Opción: Cerrar sesión -->
+
                 <LinearLayout
                     android:id="@+id/option_cerrar_sesion"
                     android:layout_width="match_parent"
@@ -359,7 +341,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_menu_revert"
-                        android:tint="#EA4335" />
+                        app:tint="#EA4335" />
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

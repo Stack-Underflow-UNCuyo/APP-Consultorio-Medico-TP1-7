@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Activity principal con navegación inferior - Consultorios Mendoza
-    Ubicación: res/layout/activity_home.xml
-    Esta Activity reemplaza a MainActivity una vez que el usuario inició sesión.
--->
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,10 +8,6 @@
     android:layout_height="match_parent"
     android:background="#F0F4F8">
 
-    <!--
-        Barra superior (TopAppBar) con título dinámico y acciones contextuales.
-        El título cambia según el fragmento activo desde HomeActivity.java.
-    -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
@@ -30,9 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!--
-        Separador visual bajo el toolbar
-    -->
+
     <View
         android:id="@+id/toolbar_divider"
         android:layout_width="0dp"
@@ -42,11 +32,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!--
-        Contenedor de Fragmentos.
-        Cada ítem del menú carga su fragmento aquí dinámicamente desde HomeActivity.java.
-        El fragmento inicial será TurnosFragment.
-    -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container"
         android:layout_width="0dp"
@@ -56,9 +41,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!--
-        Separador visual sobre el BottomNavigation
-    -->
     <View
         android:id="@+id/nav_divider"
         android:layout_width="0dp"
@@ -68,10 +50,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!--
-        Barra de navegación inferior con 4 destinos:
-        Turnos | Pacientes | Médicos | Perfil
-    -->
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="0dp"
@@ -80,7 +59,6 @@
         app:menu="@menu/menu_bottom_nav"
         app:itemIconTint="@color/selector_nav_icon"
         app:itemTextColor="@color/selector_nav_text"
-        app:itemActiveIndicatorColor="#E8F0FE"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
