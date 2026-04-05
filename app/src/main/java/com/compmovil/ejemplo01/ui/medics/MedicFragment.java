@@ -7,6 +7,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.compmovil.ejemplo01.R;
+import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -141,61 +144,110 @@ public class MedicFragment extends Fragment {
     }
 
     private void showDialogNewMedic(){
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_medic, null);
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_add_medic, null);
 
-        TextInputLayout tilName = dialogView.findViewById(R.id.til_dialog_medic_name);
-        TextInputLayout tilLastname = dialogView.findViewById(R.id.til_dialog_medic_lastname);
-        TextInputLayout tilRegistration = dialogView.findViewById(R.id.til_dialog_medic_registration);
-        TextInputLayout tilSpeciality = dialogView.findViewById(R.id.til_dialog_medic_speciality);
+        TextInputLayout      tilNombre       = dialogView.findViewById(R.id.til_dialog_medic_name);
+        TextInputLayout      tilApellido     = dialogView.findViewById(R.id.til_dialog_medic_lastname);
+        TextInputLayout      tilMatricula    = dialogView.findViewById(R.id.til_dialog_medic_registration);
+        TextInputLayout      tilEspecialidad = dialogView.findViewById(R.id.til_dialog_medic_speciality);
 
-        TextInputEditText etName = dialogView.findViewById(R.id.et_dialog_medic_name);
-        TextInputEditText etLastname = dialogView.findViewById(R.id.et_dialog_medic_lastname);
-        TextInputEditText etRegistration = dialogView.findViewById(R.id.et_dialog_medic_registration);
-        TextInputEditText etSpeciality = dialogView.findViewById(R.id.et_dialog_medic_speciality);
+        TextInputEditText    etNombre        = dialogView.findViewById(R.id.et_dialog_medic_name);
+        TextInputEditText    etApellido      = dialogView.findViewById(R.id.et_dialog_medic_lastname);
+        TextInputEditText    etMatricula     = dialogView.findViewById(R.id.et_dialog_medic_registration);
+        AutoCompleteTextView actvEspecialidad = dialogView.findViewById(R.id.actv_dialog_medic_speciality);
 
-        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+        ChipGroup chipGroupEsp = dialogView.findViewById(R.id.chipgroup_especialidades);
+
+        String[] especialidades = {
+                "Clínica Médica", "Cardiología", "Pediatría",
+                "Traumatología", "Dermatología", "Ginecología",
+                "Neurología", "Oftalmología"
+        };
+        ArrayAdapter<String> adapterEsp = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                especialidades);
+        actvEspecialidad.setAdapter(adapterEsp);
+
+        int[] chipIds = {
+                R.id.chip_esp_clinica, R.id.chip_esp_cardiologia,
+                R.id.chip_esp_pediatria, R.id.chip_esp_traumatologia,
+                R.id.chip_esp_dermatologia, R.id.chip_esp_ginecologia,
+                R.id.chip_esp_neurologia, R.id.chip_esp_oftalmologia
+        };
+        for (int chipId : chipIds) {
+            Chip chip = dialogView.findViewById(chipId);
+            if (chip != null) {
+                chip.setOnClickListener(v -> {
+                    actvEspecialidad.setText(chip.getText(), false);
+                    tilEspecialidad.setError(null);
+                    actvEspecialidad.clearFocus();
+                });
+            }
+        }
+
+        actvEspecialidad.setOnItemClickListener((parent, v, position, id) ->
+                tilEspecialidad.setError(null));
+
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
                 .setPositiveButton("Guardar", null)
                 .setNegativeButton("Cancelar", (d, which) -> d.dismiss())
                 .create();
 
         dialog.setOnShowListener(dialogInterface -> {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-                // Clean errors
-                tilName.setError(null);
-                tilLastname.setError(null);
-                tilRegistration.setError(null);
-                tilSpeciality.setError(null);
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                    .setOnClickListener(v -> {
 
-                String name = etName.getText().toString().trim();
-                String lastname = etLastname.getText().toString().trim();
-                String registration = etRegistration.getText().toString().trim();
-                String speciality = etSpeciality.getText().toString().trim();
+                        tilNombre.setError(null);
+                        tilApellido.setError(null);
+                        tilMatricula.setError(null);
+                        tilEspecialidad.setError(null);
 
-                boolean valid = true;
+                        String nombre       = etNombre.getText()    != null ? etNombre.getText().toString().trim()    : "";
+                        String apellido     = etApellido.getText()  != null ? etApellido.getText().toString().trim()  : "";
+                        String matricula    = etMatricula.getText() != null ? etMatricula.getText().toString().trim() : "";
+                        String especialidad = actvEspecialidad.getText() != null ? actvEspecialidad.getText().toString().trim() : "";
 
-                if (name.isEmpty()) { tilName.setError("Requerido"); valid = false; }
-                if (lastname.isEmpty()) { tilLastname.setError("Requerido"); valid = false; }
-                if (registration.isEmpty()) { tilRegistration.setError("Requerido"); valid = false; }
-                if (speciality.isEmpty()) { tilSpeciality.setError("Requerido"); valid = false; }
+                        boolean valido = true;
 
-                if (!valid) return;
+                        if (nombre.isEmpty()) {
+                            tilNombre.setError("El nombre es obligatorio");
+                            valido = false;
+                        }
+                        if (apellido.isEmpty()) {
+                            tilApellido.setError("El apellido es obligatorio");
+                            valido = false;
+                        }
+                        if (matricula.isEmpty()) {
+                            tilMatricula.setError("La matrícula es obligatoria");
+                            valido = false;
+                        }
+                        if (especialidad.isEmpty()) {
+                            tilEspecialidad.setError("La especialidad es obligatoria");
+                            valido = false;
+                        }
 
-                // Crear DTO y guardar
-                MedicDTO newMedic = new MedicDTO(name, lastname, registration, speciality);
-                newMedic.setActive(true);
+                        if (!valido) return;
 
-                long idGenerated = medicDAO.insert(newMedic);
+                        MedicDTO nuevoMedico = new MedicDTO(nombre, apellido, matricula, especialidad);
 
-                if (idGenerated > 0) {
-                    Toast.makeText(requireContext(), "Médico guardado correctamente", Toast.LENGTH_SHORT).show();
-                    loadMedics(); // Recargamos de la BD
-                    dialog.dismiss();
-                } else {
-                    Toast.makeText(requireContext(), "Error al guardar", Toast.LENGTH_SHORT).show();
-                }
-            });
+                        MedicDAO dao = new MedicDAO(requireContext());
+                        long idGenerado = dao.insert(nuevoMedico);
+
+                        if (idGenerado > 0) {
+                            Toast.makeText(requireContext(),
+                                    "Médico registrado correctamente", Toast.LENGTH_SHORT).show();
+                            loadMedics();
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(requireContext(),
+                                    "Error al guardar. Intentá de nuevo.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
+
         dialog.show();
     }
 }

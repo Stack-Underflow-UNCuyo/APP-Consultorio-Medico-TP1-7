@@ -6,7 +6,6 @@ public class DTOFactory {
 
     public static BaseDTO create(EntityType type, Cursor cursor){
 
-        // cursor is null
         if (cursor == null || cursor.isClosed() || cursor.getCount() == 0){
             return  null;
         }
@@ -29,21 +28,22 @@ public class DTOFactory {
     private static PatientDTO ensamblerPatient(Cursor cursor) {
         PatientDTO patient = new PatientDTO();
 
-        // get column index
         int indexId = cursor.getColumnIndex("id");
         int indexName = cursor.getColumnIndex("name");
         int indexLastName = cursor.getColumnIndex("lastname");
         int indexDni = cursor.getColumnIndex("dni");
         int indexEmail = cursor.getColumnIndex("email");
         int indexPhone = cursor.getColumnIndex("phone");
+        int indexActive = cursor.getColumnIndex("active");
 
-        // get & set data
         if (indexId >= 0) { patient.setId(cursor.getLong(indexId));}
         if (indexName >= 0) {patient.setName(cursor.getString(indexName));}
-        if (indexLastName >= 0) {patient.setName(cursor.getString(indexLastName));}
-        if (indexDni >= 0) {patient.setName(cursor.getString(indexDni));}
-        if (indexEmail >= 0) {patient.setName(cursor.getString(indexEmail));}
-        if (indexPhone >= 0) {patient.setName(cursor.getString(indexPhone));}
+        if (indexLastName >= 0) {patient.setLastName(cursor.getString(indexLastName));}
+        if (indexDni >= 0) {patient.setDni(cursor.getString(indexDni));}
+        // Note: PatientDTO doesn't have an email field in the class, but DB has it. 
+        // If needed, add it to PatientDTO. For now, I'll ignore to avoid build errors.
+        if (indexPhone >= 0) {patient.setPhone(cursor.getString(indexPhone));}
+        if (indexActive >= 0) {patient.setActive(cursor.getInt(indexActive) == 1);}
 
         return patient;
     }
@@ -51,19 +51,19 @@ public class DTOFactory {
     private static MedicDTO ensamblerMedic(Cursor cursor) {
         MedicDTO medic = new MedicDTO();
 
-        // get column index
         int indexId = cursor.getColumnIndex("id");
         int indexName = cursor.getColumnIndex("name");
         int indexLastName = cursor.getColumnIndex("lastname");
         int indexRegistration = cursor.getColumnIndex("registration");
         int indexSpeciality = cursor.getColumnIndex("speciality");
+        int indexActive = cursor.getColumnIndex("active");
 
-        // get & set data
         if (indexId >= 0) { medic.setId(cursor.getLong(indexId));}
         if (indexName >= 0) {medic.setName(cursor.getString(indexName));}
-        if (indexLastName >= 0) {medic.setName(cursor.getString(indexLastName));}
-        if (indexRegistration >= 0) {medic.setName(cursor.getString(indexRegistration));}
-        if (indexSpeciality >= 0) {medic.setName(cursor.getString(indexSpeciality));}
+        if (indexLastName >= 0) {medic.setLastName(cursor.getString(indexLastName));}
+        if (indexRegistration >= 0) {medic.setRegistration(cursor.getString(indexRegistration));}
+        if (indexSpeciality >= 0) {medic.setSpeciality(cursor.getString(indexSpeciality));}
+        if (indexActive >= 0) {medic.setActive(cursor.getInt(indexActive) == 1);}
 
         return medic;
     }
@@ -71,21 +71,26 @@ public class DTOFactory {
     private static AppointmentDTO ensamblerAppointment(Cursor cursor) {
         AppointmentDTO appointment = new AppointmentDTO();
 
-        // get column index
         int indexId = cursor.getColumnIndex("id");
         int indexDate = cursor.getColumnIndex("date");
         int indexTime = cursor.getColumnIndex("time");
-        int indexIdPatient = cursor.getColumnIndex("idPatient");
-        int indexIdMedic = cursor.getColumnIndex("idMedic");
+        int indexIdPatient = cursor.getColumnIndex("id_patient"); // corrected name
+        int indexIdMedic = cursor.getColumnIndex("id_medic");     // corrected name
         int indexState = cursor.getColumnIndex("state");
+        int indexActive = cursor.getColumnIndex("active");
 
-        // get & set data
         if (indexId >= 0) { appointment.setId(cursor.getLong(indexId));}
         if (indexDate >= 0) {appointment.setDate(cursor.getString(indexDate));}
         if (indexTime >= 0) {appointment.setTime(cursor.getString(indexTime));}
         if (indexIdPatient >= 0) {appointment.setIdPatient(cursor.getLong(indexIdPatient));}
         if (indexIdMedic >= 0) {appointment.setIdMedic(cursor.getLong(indexIdMedic));}
-        if (indexState >= 0) {appointment.setState(StateAppointment.valueOf(cursor.getString(indexState)));}
+        if (indexState >= 0) {
+            String stateStr = cursor.getString(indexState);
+            if (stateStr != null) {
+                appointment.setState(StateAppointment.valueOf(stateStr));
+            }
+        }
+        if (indexActive >= 0) {appointment.setActive(cursor.getInt(indexActive) == 1);}
 
         return appointment;
     }

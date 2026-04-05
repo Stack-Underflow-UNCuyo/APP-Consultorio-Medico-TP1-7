@@ -37,8 +37,6 @@ public class MedicDAO implements BaseDAO<MedicDTO> {
     public MedicDTO getById(long id) {
         MedicDTO medic = null;
 
-
-
         Cursor cursor = db.rawQuery("SELECT * FROM medics WHERE id = ?", new String[]{ String.valueOf(id) });
 
         if (cursor.moveToFirst()){
@@ -54,7 +52,7 @@ public class MedicDAO implements BaseDAO<MedicDTO> {
     public List<MedicDTO> getAll() {
         List<MedicDTO> listMedics = new ArrayList<>();
 
-        String query = "SELECT * FROM pacients WHERE activo = 1";
+        String query = "SELECT * FROM medics WHERE active = 1";
 
         Cursor cursor = db.rawQuery(query, null);
 

@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.compmovil.ejemplo01.R;
+import com.compmovil.ejemplo01.ui.medics.MedicFragment;
 import com.compmovil.ejemplo01.ui.mis_turnos.TurnosFragment;
 import com.compmovil.ejemplo01.ui.patients.PatientFragment;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -42,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        // 3. Listener del BottomNavigationView
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
 
                 } else if (itemId == R.id.nav_medicos) {
-//                    cargarFragmento(new MedicFragment(), TITULO_MEDICOS);
+                      cargarFragmento(new MedicFragment(), TITULO_MEDICOS);
                     return true;
 
                 }
@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void cerrarSesion() {
-        // TODO: limpiar SharedPreferences o token de sesión si los usás
         android.content.Intent intent = new android.content.Intent(this, LandingActivity.class);
         intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK
                 | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);

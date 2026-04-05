@@ -28,6 +28,7 @@ public class PatientDAO implements BaseDAO<PatientDTO> {
         values.put("lastname", patient.getLastName());
         values.put("dni", patient.getDni());
         values.put("phone", patient.getPhone());
+        values.put("email", patient.getEmail()); // Added email
         values.put("active", patient.isActive() ? 1 : 0);
 
         return db.insert("patients", null, values);
@@ -52,19 +53,16 @@ public class PatientDAO implements BaseDAO<PatientDTO> {
     public List<PatientDTO> getAll() {
         List<PatientDTO> listPatients = new ArrayList<>();
 
-        String query = "SELECT * FROM patients WHERE activo = 1";
+        String query = "SELECT * FROM patients WHERE active = 1";
 
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             do {
-
                 PatientDTO patient = (PatientDTO) DTOFactory.create(EntityType.PATIENT, cursor);
-
                 if (patient != null) {
                     listPatients.add(patient);
                 }
-
             } while (cursor.moveToNext());
         }
 
@@ -83,6 +81,7 @@ public class PatientDAO implements BaseDAO<PatientDTO> {
         values.put("lastname", patient.getLastName());
         values.put("dni", patient.getDni());
         values.put("phone", patient.getPhone());
+        values.put("email", patient.getEmail());
         values.put("active", patient.isActive() ? 1 : 0);
 
 

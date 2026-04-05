@@ -145,8 +145,8 @@ public class TurnosFragment extends Fragment {
             }
         }
 
-        tvCountToday.setText(countToday);
-        tvCountPending.setText(countPending);
+        tvCountToday.setText(String.valueOf(countToday));
+        tvCountPending.setText(String.valueOf(countPending));
 
     }
 

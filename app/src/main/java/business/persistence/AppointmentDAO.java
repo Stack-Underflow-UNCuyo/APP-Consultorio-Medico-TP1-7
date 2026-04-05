@@ -28,8 +28,8 @@ public class AppointmentDAO implements BaseDAO<AppointmentDTO>{
         values.put("date", appointment.getDate());
         values.put("time", appointment.getTime());
         values.put("state", appointment.getState().toString());
-        values.put("idPatient", appointment.getIdPatient());
-        values.put("idMedic", appointment.getIdMedic());
+        values.put("id_patient", appointment.getIdPatient());
+        values.put("id_medic", appointment.getIdMedic());
         values.put("active", appointment.isActive() ? 1 : 0);
 
         return db.insert("appointments", null, values);
@@ -54,7 +54,7 @@ public class AppointmentDAO implements BaseDAO<AppointmentDTO>{
     public List<AppointmentDTO> getAll() {
         List<AppointmentDTO> listAppointments = new ArrayList<>();
 
-        String query = "SELECT * FROM appointments WHERE activo = 1";
+        String query = "SELECT * FROM appointments WHERE active = 1";
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -84,8 +84,8 @@ public class AppointmentDAO implements BaseDAO<AppointmentDTO>{
         values.put("date", appointment.getDate());
         values.put("time", appointment.getTime());
         values.put("state", appointment.getState().toString());
-        values.put("idPatient", appointment.getIdPatient());
-        values.put("idMedic", appointment.getIdMedic());
+        values.put("id_patient", appointment.getIdPatient());
+        values.put("id_medic", appointment.getIdMedic());
         values.put("active", appointment.isActive() ? 1 : 0);
 
 
