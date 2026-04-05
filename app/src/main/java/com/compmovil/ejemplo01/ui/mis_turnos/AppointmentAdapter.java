@@ -30,7 +30,6 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
 
     public AppointmentAdapter(Context context, List<AppointmentDTO> appointmentList) {
         this.appointmentList = appointmentList;
-        // Inicializamos los DAOs aquí para no tener que crearlos en cada fila
         this.patientDAO = new PatientDAO(context);
         this.medicDAO = new MedicDAO(context);
     }
@@ -38,7 +37,6 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
     @NonNull
     @Override
     public AppointmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflamos el XML del item
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_turno, parent, false);
         return new AppointmentViewHolder(view);
@@ -48,11 +46,9 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
     public void onBindViewHolder(@NonNull AppointmentViewHolder holder, int position) {
         AppointmentDTO appointment = appointmentList.get(position);
 
-        // Setear Fecha y Hora
         holder.tvDate.setText(appointment.getDate());
         holder.tvTime.setText(appointment.getTime());
 
-        // Paciente ID y setear el nombre
         PatientDTO patient = patientDAO.getById(appointment.getIdPatient());
         if (patient != null) {
             holder.tvName.setText(patient.getName() + " " + patient.getLastName());
@@ -60,7 +56,6 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             holder.tvName.setText("Paciente no encontrado");
         }
 
-        // Medic ID y setear el nombre
         MedicDTO medic = medicDAO.getById(appointment.getIdMedic());
         if (medic != null) {
             holder.tvMedic.setText("Dr/a. " + medic.getName() + " " + medic.getLastName());
@@ -68,29 +63,29 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             holder.tvMedic.setText("Médico no encontrado");
         }
 
+        // Set the state text into the state chip
+        if (holder.chipStatus != null) {
+            holder.chipStatus.setText(appointment.getState() != null ? appointment.getState().toString() : "PENDING");
+        }
+
         try {
             LocalDate hoy = LocalDate.now();
-            LocalDate fechaTurno = LocalDate.parse(appointment.getDate()); // espera "YYYY-MM-DD"
+            LocalDate fechaTurno = LocalDate.parse(appointment.getDate());
 
             if (fechaTurno.isEqual(hoy)) {
-                holder.chipToday.setVisibility(View.VISIBLE);
-                holder.chipPassed.setVisibility(View.GONE);
-                holder.chipPending.setVisibility(View.GONE);
+                if (holder.chipToday != null) holder.chipToday.setVisibility(View.VISIBLE);
+                if (holder.chipPassed != null) holder.chipPassed.setVisibility(View.GONE);
             } else if (fechaTurno.isBefore(hoy)) {
-                holder.chipPassed.setVisibility(View.VISIBLE);
-                holder.chipToday.setVisibility(View.GONE);
-                holder.chipPending.setVisibility(View.GONE);
+                if (holder.chipToday != null) holder.chipToday.setVisibility(View.GONE);
+                if (holder.chipPassed != null) holder.chipPassed.setVisibility(View.VISIBLE);
             } else {
-                holder.chipPending.setVisibility(View.VISIBLE);
-                holder.chipToday.setVisibility(View.GONE);
-                holder.chipPassed.setVisibility(View.GONE);
+                if (holder.chipToday != null) holder.chipToday.setVisibility(View.GONE);
+                if (holder.chipPassed != null) holder.chipPassed.setVisibility(View.GONE);
             }
         } catch (Exception e) {
-            // si hay una fecha mal guardada, ocultamos los chips para no crashear
             e.printStackTrace();
-            holder.chipToday.setVisibility(View.GONE);
-            holder.chipPassed.setVisibility(View.GONE);
-            holder.chipPending.setVisibility(View.GONE);
+            if (holder.chipToday != null) holder.chipToday.setVisibility(View.GONE);
+            if (holder.chipPassed != null) holder.chipPassed.setVisibility(View.GONE);
         }
     }
 
@@ -104,10 +99,9 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         notifyDataSetChanged();
     }
 
-    // El ViewHolder guarda las referencias a los TextViews y Chips
     static class AppointmentViewHolder extends RecyclerView.ViewHolder {
         TextView tvDate, tvName, tvMedic, tvTime;
-        Chip chipPending, chipToday, chipPassed;
+        Chip chipStatus, chipToday, chipPassed; // renamed chipPending to chipStatus
 
         public AppointmentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -116,7 +110,8 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             tvMedic = itemView.findViewById(R.id.tv_medico);
             tvTime = itemView.findViewById(R.id.tv_hora);
 
-            chipPending = itemView.findViewById(R.id.chip_pendientes);
+            // FIX: Using correct IDs from item_turno.xml
+            chipStatus = itemView.findViewById(R.id.chip_estado);
             chipPassed = itemView.findViewById(R.id.chip_vencido);
             chipToday = itemView.findViewById(R.id.chip_hoy);
         }
