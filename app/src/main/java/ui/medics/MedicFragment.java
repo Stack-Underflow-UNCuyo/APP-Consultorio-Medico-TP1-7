@@ -1,4 +1,4 @@
-package com.compmovil.ejemplo01.ui.medics;
+package ui.medics;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +32,7 @@ import java.util.List;
 
 import business.entities.MedicDTO;
 import business.persistence.MedicDAO;
+import business.services.MedicService;
 
 public class MedicFragment extends Fragment {
     private RecyclerView rvMedics;
@@ -42,7 +42,7 @@ public class MedicFragment extends Fragment {
     private TextInputEditText tiSearchBar;
     private ChipGroup chipGroupSpeciality;
 
-    private MedicDAO medicDAO;
+    private MedicService medicService;
     private MedicAdapter medicAdapter;
     private List<MedicDTO> allMedics;
 
@@ -62,7 +62,7 @@ public class MedicFragment extends Fragment {
         chipGroupSpeciality = view.findViewById(R.id.chipgroup_especialidad);
 
         rvMedics.setLayoutManager(new LinearLayoutManager(getContext()));
-        medicDAO = new MedicDAO(getContext());
+        medicService = new MedicService(getContext());
 
         loadMedics();
 
@@ -97,7 +97,7 @@ public class MedicFragment extends Fragment {
     }
 
     private void loadMedics(){
-        allMedics = medicDAO.getAll();
+        allMedics = medicService.getAllMedics();
         applyCombinedFilters();
     }
 
@@ -106,23 +106,7 @@ public class MedicFragment extends Fragment {
     private void applyCombinedFilters(){
         if (allMedics == null) return;
 
-        List<MedicDTO> filteredList = new ArrayList<>();
-
-        for (MedicDTO medic : allMedics) {
-            // Text Search
-            boolean matchesText = currentSearchText.isEmpty() ||
-                    medic.getName().toLowerCase().contains(currentSearchText) ||
-                    medic.getLastName().toLowerCase().contains(currentSearchText) ||
-                    medic.getSpeciality().toLowerCase().contains(currentSearchText);
-
-            // Chip Set Speaciality
-            boolean matchesSpeciality = currentSpecialityFilter.equals("Todos") ||
-                    medic.getSpeciality().equalsIgnoreCase(currentSpecialityFilter);
-
-            if (matchesText && matchesSpeciality) {
-                filteredList.add(medic);
-            }
-        }
+        List<MedicDTO> filteredList = medicService.filterMedics(allMedics, currentSearchText, currentSpecialityFilter);
 
         // Update UI
         tvCount.setText(filteredList.size() + " médicos registrados");
@@ -199,51 +183,20 @@ public class MedicFragment extends Fragment {
         dialog.setOnShowListener(dialogInterface -> {
             dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
                     .setOnClickListener(v -> {
+                        try {
+                            medicService.registerMedic(
+                                    etNombre.getText().toString(),
+                                    etApellido.getText().toString(),
+                                    etMatricula.getText().toString(),
+                                    actvEspecialidad.getText().toString()
+                            );
 
-                        tilNombre.setError(null);
-                        tilApellido.setError(null);
-                        tilMatricula.setError(null);
-                        tilEspecialidad.setError(null);
-
-                        String nombre       = etNombre.getText()    != null ? etNombre.getText().toString().trim()    : "";
-                        String apellido     = etApellido.getText()  != null ? etApellido.getText().toString().trim()  : "";
-                        String matricula    = etMatricula.getText() != null ? etMatricula.getText().toString().trim() : "";
-                        String especialidad = actvEspecialidad.getText() != null ? actvEspecialidad.getText().toString().trim() : "";
-
-                        boolean valido = true;
-
-                        if (nombre.isEmpty()) {
-                            tilNombre.setError("El nombre es obligatorio");
-                            valido = false;
-                        }
-                        if (apellido.isEmpty()) {
-                            tilApellido.setError("El apellido es obligatorio");
-                            valido = false;
-                        }
-                        if (matricula.isEmpty()) {
-                            tilMatricula.setError("La matrícula es obligatoria");
-                            valido = false;
-                        }
-                        if (especialidad.isEmpty()) {
-                            tilEspecialidad.setError("La especialidad es obligatoria");
-                            valido = false;
-                        }
-
-                        if (!valido) return;
-
-                        MedicDTO nuevoMedico = new MedicDTO(nombre, apellido, matricula, especialidad);
-
-                        MedicDAO dao = new MedicDAO(requireContext());
-                        long idGenerado = dao.insert(nuevoMedico);
-
-                        if (idGenerado > 0) {
-                            Toast.makeText(requireContext(),
-                                    "Médico registrado correctamente", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Médico guardado", Toast.LENGTH_SHORT).show();
                             loadMedics();
                             dialog.dismiss();
-                        } else {
-                            Toast.makeText(requireContext(),
-                                    "Error al guardar. Intentá de nuevo.", Toast.LENGTH_SHORT).show();
+
+                        } catch (Exception e) {
+                            Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
         });

@@ -1,4 +1,4 @@
-package com.compmovil.ejemplo01.controllers;
+package controllers;
 
 import android.app.Activity;
 

@@ -1,4 +1,4 @@
-package com.compmovil.ejemplo01.controllers;
+package controllers;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -10,9 +10,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.compmovil.ejemplo01.R;
-import com.compmovil.ejemplo01.ui.medics.MedicFragment;
-import com.compmovil.ejemplo01.ui.mis_turnos.TurnosFragment;
-import com.compmovil.ejemplo01.ui.patients.PatientFragment;
+import ui.medics.MedicFragment;
+import ui.mis_turnos.TurnosFragment;
+import ui.patients.PatientFragment;
+
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;

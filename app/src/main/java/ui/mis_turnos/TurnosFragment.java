@@ -1,4 +1,4 @@
-package com.compmovil.ejemplo01.ui.mis_turnos;
+package ui.mis_turnos;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -37,7 +37,6 @@ import business.persistence.AppointmentDAO;
 import business.persistence.MedicDAO;
 import business.persistence.PatientDAO;
 
-
 public class TurnosFragment extends Fragment {
 
     private RecyclerView rvAppointments;
@@ -47,7 +46,7 @@ public class TurnosFragment extends Fragment {
     private FloatingActionButton fab;
 
     private AppointmentDAO appointmentDAO;
-    private AppointmentAdapter  appointmentAdapter;
+    private AppointmentAdapter appointmentAdapter;
     private List<AppointmentDTO> appointmentList;
     private List<AppointmentDTO> todayAppointments;
     private List<AppointmentDTO> pendingAppointments;
@@ -65,7 +64,6 @@ public class TurnosFragment extends Fragment {
         fab = view.findViewById(R.id.fab_nuevo_turno);
         chipGroupFilter = view.findViewById(R.id.chipgroup_filter);
 
-
         rvAppointments.setLayoutManager(new LinearLayoutManager(getContext()));
         appointmentDAO = new AppointmentDAO(getContext());
 
@@ -73,23 +71,16 @@ public class TurnosFragment extends Fragment {
 
         fab.setOnClickListener(v -> showDialogNewAppointment());
 
-
-        chipGroupFilter.setOnCheckedStateChangeListener(new ChipGroup.OnCheckedStateChangeListener() {
-            @Override
-            public void onCheckedChanged(@NonNull ChipGroup chipGroup, @NonNull List<Integer> list) {
-                if (list.isEmpty()) {
-
-                } else {
-                    for (Integer id : list){
-                        if (id == R.id.chip_pendientes){
-                            updateViewList(pendingAppointments);
-                        } else if(id == R.id.chip_todos){
-                            updateViewList(appointmentList);
-                        } else if (id == R.id.chip_group_hoy) {
-                            updateViewList(todayAppointments);
-                        }
+        chipGroupFilter.setOnCheckedStateChangeListener((chipGroup, list) -> {
+            if (!list.isEmpty()) {
+                for (Integer id : list){
+                    if (id == R.id.chip_pendientes){
+                        updateViewList(pendingAppointments);
+                    } else if(id == R.id.chip_todos){
+                        updateViewList(appointmentList);
+                    } else if (id == R.id.chip_group_hoy) {
+                        updateViewList(todayAppointments);
                     }
-
                 }
             }
         });
@@ -97,25 +88,20 @@ public class TurnosFragment extends Fragment {
         return view;
     }
 
-    private void updateViewList(List<AppointmentDTO> appointmentList){
-        // if adapter is null
+    private void updateViewList(List<AppointmentDTO> list){
         if (appointmentAdapter == null) {
-            appointmentAdapter = new AppointmentAdapter(getContext(), appointmentList);
+            appointmentAdapter = new AppointmentAdapter(getContext(), list);
             rvAppointments.setAdapter(appointmentAdapter);
         } else {
-            appointmentAdapter.updateList(appointmentList);
+            appointmentAdapter.updateList(list);
         }
 
-        // update view
-        if (appointmentList.isEmpty()) {
+        if (list == null || list.isEmpty()) {
             layoutEmpty.setVisibility(View.VISIBLE);
             rvAppointments.setVisibility(View.GONE);
         } else {
             layoutEmpty.setVisibility(View.GONE);
             rvAppointments.setVisibility(View.VISIBLE);
-
-            appointmentAdapter = new AppointmentAdapter(getContext(), appointmentList);
-            rvAppointments.setAdapter(appointmentAdapter);
         }
     }
 
@@ -134,8 +120,8 @@ public class TurnosFragment extends Fragment {
 
                 if (apptDate.isEqual(today)) {
                     countToday++;
-                    pendingAppointments.add(appointment);
                     todayAppointments.add(appointment);
+                    pendingAppointments.add(appointment);
                 } else if (apptDate.isAfter(today)) {
                     countPending++;
                     pendingAppointments.add(appointment);
@@ -147,11 +133,12 @@ public class TurnosFragment extends Fragment {
 
         tvCountToday.setText(String.valueOf(countToday));
         tvCountPending.setText(String.valueOf(countPending));
-
+        
+        // Refresh with "All" by default
+        updateViewList(appointmentList);
     }
 
     private void showDialogNewAppointment() {
-
         View dialogView = LayoutInflater.from(requireContext())
                 .inflate(R.layout.dialog_add_appointment, null);
 
@@ -164,6 +151,7 @@ public class TurnosFragment extends Fragment {
         TextView tvSelectedDate  = dialogView.findViewById(R.id.tv_fecha_seleccionada);
         TextView tvSelectedTime   = dialogView.findViewById(R.id.tv_hora_seleccionada);
 
+        // Final arrays to be modified inside lambdas
         final long[] selectedIdPatient = { -1L };
         final long[] selectedIdMedic = { -1L };
         final String[] selectedDate = { "" };
@@ -172,148 +160,84 @@ public class TurnosFragment extends Fragment {
         // Patient List
         PatientDAO patientDAO = new PatientDAO(requireContext());
         List<PatientDTO> patients = patientDAO.getAll();
-
-        String[] patientName = new String[patients.size()];
+        String[] patientNames = new String[patients.size()];
         for (int i = 0; i < patients.size(); i++) {
-            patientName[i] = patients.get(i).getName() + " " + patients.get(i).getLastName();
+            patientNames[i] = patients.get(i).getName() + " " + patients.get(i).getLastName();
         }
 
-        ArrayAdapter<String> adapterPatients = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                patientName);
+        ArrayAdapter<String> adapterPatients = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, patientNames);
         actvPatient.setAdapter(adapterPatients);
-
         actvPatient.setOnItemClickListener((parent, v, position, id) -> {
             selectedIdPatient[0] = patients.get(position).getId();
-            tilPatient.setError(null); // limpiar error si lo había
+            tilPatient.setError(null);
         });
 
         // Medic List
         MedicDAO medicDAO = new MedicDAO(requireContext());
         List<MedicDTO> medics = medicDAO.getAll();
-
         String[] medicsNames = new String[medics.size()];
         for (int i = 0; i < medics.size(); i++) {
-            medicsNames[i] = "Dr. " + medics.get(i).getName() + " " + medics.get(i).getLastName()
-                    + " · " + medics.get(i).getSpeciality();
+            medicsNames[i] = "Dr. " + medics.get(i).getName() + " " + medics.get(i).getLastName();
         }
 
-        ArrayAdapter<String> adapterMedicos = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                medicsNames);
+        ArrayAdapter<String> adapterMedicos = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, medicsNames);
         actvMedic.setAdapter(adapterMedicos);
-
         actvMedic.setOnItemClickListener((parent, v, position, id) -> {
             selectedIdMedic[0] = medics.get(position).getId();
             tilMedic.setError(null);
         });
 
-        //  CalendarView
-        // minDate = today
+        // Initialize date with today
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        selectedDate[0] = String.format(Locale.ROOT,"%04d-%02d-%02d", cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH) + 1, cal.get(java.util.Calendar.DAY_OF_MONTH));
+        tvSelectedDate.setText(String.format("Fecha: %02d/%02d/%04d", cal.get(java.util.Calendar.DAY_OF_MONTH), cal.get(java.util.Calendar.MONTH) + 1, cal.get(java.util.Calendar.YEAR)));
+
         calendarView.setMinDate(System.currentTimeMillis() - 1000);
-
-        // Init with today
-        java.util.Calendar today = java.util.Calendar.getInstance();
-        selectedDate[0] = String.format(Locale.ROOT,"%04d-%02d-%02d",
-                today.get(java.util.Calendar.YEAR),
-                today.get(java.util.Calendar.MONTH) + 1,
-                today.get(java.util.Calendar.DAY_OF_MONTH));
-        tvSelectedDate.setText(String.format("Fecha: %s", String.format(Locale.ROOT, "%02d/%02d/%04d",
-                today.get(java.util.Calendar.DAY_OF_MONTH),
-                today.get(java.util.Calendar.MONTH) + 1,
-                today.get(java.util.Calendar.YEAR))));
-        tvSelectedDate.setTextColor(0xFF0D2B4E); // color confirmado
-
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            // month es 0-indexed → sumar 1
             selectedDate[0] = String.format(Locale.ROOT, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
-            tvSelectedDate.setText(String.format(Locale.ROOT, "Fecha: %02d/%02d/%04d",
-                    dayOfMonth, month + 1, year));
-            tvSelectedDate.setTextColor(0xFF0D2B4E);
+            tvSelectedDate.setText(String.format(Locale.ROOT, "Fecha: %02d/%02d/%04d", dayOfMonth, month + 1, year));
         });
 
-        // ChipGroup appointment time
         chipGroupTimes.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (!checkedIds.isEmpty()) {
                 Chip chip = group.findViewById(checkedIds.get(0));
                 if (chip != null) {
-                    selectedTime[0] = chip.getText().toString(); // "HH:MM"
+                    selectedTime[0] = chip.getText().toString();
                     tvSelectedTime.setText("Horario: " + selectedTime[0]);
-                    tvSelectedTime.setTextColor(0xFF0D2B4E);
                 }
             } else {
                 selectedTime[0] = "";
                 tvSelectedTime.setText("Seleccioná un horario");
-                tvSelectedTime.setTextColor(0xFF5A7A99);
             }
         });
 
-        // build dialog
         androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
-                .setPositiveButton("Guardar turno", null) // null → sobreescrito abajo
+                .setPositiveButton("Guardar", null)
                 .setNegativeButton("Cancelar", (d, which) -> d.dismiss())
                 .create();
 
-        // button
         dialog.setOnShowListener(dialogInterface -> {
-            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
-                    .setOnClickListener(v -> {
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                boolean valido = true;
+                if (selectedIdPatient[0] == -1L) { tilPatient.setError("Seleccioná un paciente"); valido = false; }
+                if (selectedIdMedic[0] == -1L) { tilMedic.setError("Seleccioná un médico"); valido = false; }
+                if (selectedDate[0].isEmpty()) { Toast.makeText(requireContext(), "Seleccioná una fecha", Toast.LENGTH_SHORT).show(); valido = false; }
+                if (selectedTime[0].isEmpty()) { Toast.makeText(requireContext(), "Seleccioná un horario", Toast.LENGTH_SHORT).show(); valido = false; }
 
-                        // Limpiar errores previos
-                        tilPatient.setError(null);
-                        tilMedic.setError(null);
+                if (!valido) return;
 
-                        boolean valido = true;
-
-                        if (selectedIdPatient[0] == -1L) {
-                            tilPatient.setError("Seleccioná un paciente");
-                            valido = false;
-                        }
-                        if (selectedIdMedic[0] == -1L) {
-                            tilMedic.setError("Seleccioná un médico");
-                            valido = false;
-                        }
-                        if (selectedDate[0].isEmpty()) {
-                            Toast.makeText(requireContext(),
-                                    "Seleccioná una fecha", Toast.LENGTH_SHORT).show();
-                            valido = false;
-                        }
-                        if (selectedTime[0].isEmpty()) {
-                            Toast.makeText(requireContext(),
-                                    "Seleccioná un horario", Toast.LENGTH_SHORT).show();
-                            valido = false;
-                        }
-
-                        if (!valido) return;
-
-                        // load appointment
-                        AppointmentDTO nuevoTurno = new AppointmentDTO(
-                                selectedDate[0],          // "YYYY-MM-DD"
-                                selectedTime[0],          // "HH:MM"
-                                selectedIdPatient[0],
-                                selectedIdMedic[0],
-                                StateAppointment.PENDING
-                        );
-
-                        AppointmentDAO appointmentDAO = new AppointmentDAO(requireContext());
-                        long idGenerado = appointmentDAO.insert(nuevoTurno);
-
-                        if (idGenerado > 0) {
-                            Toast.makeText(requireContext(),
-                                    "Turno guardado correctamente", Toast.LENGTH_SHORT).show();
-                            loadAppointments();
-                            dialog.dismiss();
-                        } else {
-                            Toast.makeText(requireContext(),
-                                    "Error al guardar. Intentá de nuevo.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                AppointmentDTO newAppt = new AppointmentDTO(selectedDate[0], selectedTime[0], selectedIdPatient[0], selectedIdMedic[0], StateAppointment.PENDING);
+                if (appointmentDAO.insert(newAppt) > 0) {
+                    Toast.makeText(requireContext(), "Turno guardado", Toast.LENGTH_SHORT).show();
+                    loadAppointments();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(requireContext(), "Error al guardar", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
         dialog.show();
     }
-
 }

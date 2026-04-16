@@ -39,9 +39,8 @@ public class DTOFactory {
         if (indexId >= 0) { patient.setId(cursor.getLong(indexId));}
         if (indexName >= 0) {patient.setName(cursor.getString(indexName));}
         if (indexLastName >= 0) {patient.setLastName(cursor.getString(indexLastName));}
-        if (indexDni >= 0) {patient.setDni(cursor.getString(indexDni));}
-        // Note: PatientDTO doesn't have an email field in the class, but DB has it. 
-        // If needed, add it to PatientDTO. For now, I'll ignore to avoid build errors.
+        if (indexDni >= 0) {patient.setDni(cursor.getInt(indexDni));}
+        if (indexEmail >= 0) {patient.setEmail(cursor.getString(indexEmail));}
         if (indexPhone >= 0) {patient.setPhone(cursor.getString(indexPhone));}
         if (indexActive >= 0) {patient.setActive(cursor.getInt(indexActive) == 1);}
 
@@ -74,8 +73,8 @@ public class DTOFactory {
         int indexId = cursor.getColumnIndex("id");
         int indexDate = cursor.getColumnIndex("date");
         int indexTime = cursor.getColumnIndex("time");
-        int indexIdPatient = cursor.getColumnIndex("id_patient"); // corrected name
-        int indexIdMedic = cursor.getColumnIndex("id_medic");     // corrected name
+        int indexIdPatient = cursor.getColumnIndex("id_patient");
+        int indexIdMedic = cursor.getColumnIndex("id_medic");
         int indexState = cursor.getColumnIndex("state");
         int indexActive = cursor.getColumnIndex("active");
 

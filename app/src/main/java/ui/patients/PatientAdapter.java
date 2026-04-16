@@ -1,4 +1,4 @@
-package com.compmovil.ejemplo01.ui.patients;
+package ui.patients;
 
 import android.view.LayoutInflater;
 import android.view.View;

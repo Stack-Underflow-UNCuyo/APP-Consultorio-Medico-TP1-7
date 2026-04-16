@@ -1,4 +1,4 @@
-package com.compmovil.ejemplo01.ui.patients;
+package ui.patients;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -51,8 +51,6 @@ public class PatientFragment extends Fragment {
         layoutEmpty = view.findViewById(R.id.layout_empty_pacientes);
         tvCount = view.findViewById(R.id.tv_count_pacientes);
         fab = view.findViewById(R.id.fab_nuevo_paciente);
-        
-        // FIX: Point to the actual EditText ID (et_buscar_paciente) instead of the TextInputLayout ID (til_buscar_paciente)
         tiSearchBar = view.findViewById(R.id.et_buscar_paciente);
 
         rvPatients.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -87,7 +85,7 @@ public class PatientFragment extends Fragment {
         for (PatientDTO patient : currentPatients){
             if ((patient.getName().toLowerCase().contains(txtMin)) ||
             patient.getLastName().toLowerCase().contains(txtMin) ||
-            patient.getDni().toLowerCase().contains(txtMin)){
+            String.valueOf(patient.getDni()).contains(txtMin)){
                 newList.add(patient);
             }
         }
@@ -137,15 +135,27 @@ public class PatientFragment extends Fragment {
 
                         if (nombre.isEmpty()) { tilNombre.setError("El nombre es obligatorio"); valido = false; }
                         if (apellido.isEmpty()) { tilApellido.setError("El apellido es obligatorio"); valido = false; }
-                        if (dniStr.isEmpty()) { tilDni.setError("El DNI es obligatorio"); valido = false; }
-                        else if (dniStr.length() < 7 || dniStr.length() > 8) { tilDni.setError("DNI inválido (7 u 8 dígitos)"); valido = false; }
+
+                        Integer dni = null;
+                        if (dniStr.isEmpty()) {
+                            tilDni.setError("El DNI es obligatorio"); valido = false;
+                        } else {
+                            try {
+                                dni = Integer.valueOf(dniStr);
+                                if (dniStr.length() < 7 || dniStr.length() > 8) { tilDni.setError("DNI inválido (7 u 8 dígitos)"); valido = false; }
+                            } catch (NumberFormatException e) {
+                                tilDni.setError("DNI debe ser un número"); valido = false;
+                            }
+                        }
+
                         if (telefono.isEmpty()) { tilTelefono.setError("El teléfono es obligatorio"); valido = false; }
+
                         if (email.isEmpty()) { tilEmail.setError("El email es obligatorio"); valido = false; }
                         else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) { tilEmail.setError("Formato de email inválido"); valido = false; }
 
                         if (!valido) return;
 
-                        PatientDTO newPatient = new PatientDTO(nombre, apellido, email, dniStr, telefono);
+                        PatientDTO newPatient = new PatientDTO(nombre, apellido, email, dni, telefono);
                         PatientDAO dao = new PatientDAO(requireContext());
                         long idGenerado = dao.insert(newPatient);
 

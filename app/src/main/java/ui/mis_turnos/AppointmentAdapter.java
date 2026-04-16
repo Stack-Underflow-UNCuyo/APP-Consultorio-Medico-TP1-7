@@ -1,4 +1,4 @@
-package com.compmovil.ejemplo01.ui.mis_turnos;
+package ui.mis_turnos;
 
 import android.content.Context;
 import android.view.LayoutInflater;
