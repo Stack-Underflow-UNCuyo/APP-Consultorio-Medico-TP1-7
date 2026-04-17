@@ -2,27 +2,19 @@ package controllers;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.compmovil.ejemplo01.R;
 import com.google.android.material.textfield.TextInputLayout;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import business.services.AuthService;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
     EditText email, password;
     TextInputLayout emailTIL;
     TextInputLayout passwordTIL;
@@ -31,6 +23,8 @@ public class LoginActivity extends AppCompatActivity {
     ImageButton backImgBtn;
 
     TextView registerTV;
+
+    private AuthService authService;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +40,8 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn = findViewById(R.id.btn_login_submit);
         registerTV = findViewById(R.id.tv_ir_registro);
         backImgBtn = findViewById(R.id.btn_back);
+
+        authService = new AuthService(this);
 
         registerTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,59 +60,58 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         loginBtn.setOnClickListener(view -> {
-            if (!validateLoginInput()) return;
+            if (!validateLoginInput()) {
+                performLogin();
+            };
 
-            String emailStr    = email.getText().toString().trim();
-            String passwordStr = password.getText().toString().trim();
 
-            AuthService authService = new AuthService(LoginActivity.this);
-            authService.login(emailStr, passwordStr, new AuthService.OnLoginResult() {
-                @Override
-                public void onSuccess(String role) {
-                    // ir al MainActivity
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                }
-
-                @Override
-                public void onError(String message) {
-                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-                }
-            });
         });
     }
 
-    public boolean validateLoginInput(){
+    private boolean validateLoginInput() {
         String emailStr = email.getText().toString().trim();
         String passwordStr = password.getText().toString().trim();
+        boolean isValid = true;
 
-        if (emailStr.isEmpty()) {
-            emailTIL.setError("Email address is required");
-            return false;
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(emailStr).matches()) {
-            emailTIL.setError("Please enter a valid email address");
-            return false;
+        // Limpiar errores previos
+        emailTIL.setError(null);
+        passwordTIL.setError(null);
+
+        // LE PREGUNTAMOS AL SERVICIO (No lo validamos nosotros)
+        if (!authService.isEmailValid(emailStr)) {
+            emailTIL.setError("Ingrese un email válido");
+            isValid = false;
         }
 
         if (passwordStr.isEmpty()) {
-            passwordTIL.setError("Password is required");
-            return false;
+            passwordTIL.setError("La contraseña es obligatoria");
+            isValid = false;
+        } else if (!authService.isPasswordValid(passwordStr)) {
+            passwordTIL.setError("La contraseña debe tener 8 caracteres, mayúsculas, números y símbolos");
+            isValid = false;
         }
 
-        if (!isValidPassword(passwordStr)) {
-            passwordTIL.setError("Password must be at least 8 characters long and contain uppercase, lowercase, digit, and special character.");
-            return false;
-        }
-
-        return true;
-
+        return isValid;
     }
 
-    public boolean isValidPassword(final String password) {
-        Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
-        Matcher matcher = pattern.matcher(password);
-        return matcher.matches();
+    private void performLogin(){
+        String emailStr = email.getText().toString().trim();
+        String passwordStr = password.getText().toString().trim();
+
+        authService.login(emailStr, passwordStr, new AuthService.OnLoginResult() {
+            @Override
+            public void onSuccess(String role) {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
+
 }

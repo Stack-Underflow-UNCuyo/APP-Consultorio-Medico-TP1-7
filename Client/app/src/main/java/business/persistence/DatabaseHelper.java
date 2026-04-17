@@ -10,7 +10,7 @@ import android.util.Log;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "ConsultorioDB.db";
-    private static final int DATABASE_VERSION = 2; // Incremented to force schema update
+    private static final int DATABASE_VERSION = 3; // Incremented for users table
 
     private static DatabaseHelper instance;
 
@@ -45,6 +45,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "FOREIGN KEY(id_patient) REFERENCES patients(id), " +
                     "FOREIGN KEY(id_medic) REFERENCES medics(id))";
 
+    private static final String CREATE_TABLE_USERS =
+            "CREATE TABLE users (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "name TEXT, " +
+                    "lastname TEXT, " +
+                    "dni TEXT, " +
+                    "phone TEXT, " +
+                    "email TEXT, " +
+                    "password TEXT, " +
+                    "active INTEGER)";
+
     private DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -62,16 +73,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS appointments");
         db.execSQL("DROP TABLE IF EXISTS medics");
         db.execSQL("DROP TABLE IF EXISTS patients");
+        db.execSQL("DROP TABLE IF EXISTS users");
         onCreate(db);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d(TAG, "Creating table: " + CREATE_TABLE_PATIENT);
         db.execSQL(CREATE_TABLE_PATIENT);
-        Log.d(TAG, "Creating table: " + CREATE_TABLE_MEDIC);
         db.execSQL(CREATE_TABLE_MEDIC);
-        Log.d(TAG, "Creating table: " + CREATE_TABLE_APPOINTMENTS);
         db.execSQL(CREATE_TABLE_APPOINTMENTS);
+        db.execSQL(CREATE_TABLE_USERS);
     }
 }

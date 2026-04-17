@@ -1,8 +1,13 @@
 package business.services;
 
 import android.content.Context;
+import android.util.Patterns;
+
+import java.util.regex.Pattern;
+
 import business.entities.LoginRequestDTO;
 import business.entities.LoginResponseDTO;
+import business.entities.UserDTO;
 import business.security.TokenManager;
 import network.AuthApiService;
 import network.RetrofitClient;
@@ -16,8 +21,16 @@ public class AuthService {
     private final TokenManager tokenManager;
     private final Context context;
 
+    private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+
+
     public interface OnLoginResult {
         void onSuccess(String role);
+        void onError(String message);
+    }
+
+    public interface OnRegisterResult {
+        void onSuccess();
         void onError(String message);
     }
 
@@ -60,4 +73,38 @@ public class AuthService {
             }
         });
     }
+
+    public void register(UserDTO user, OnRegisterResult callback) {
+        apiService.register(user).enqueue(new retrofit2.Callback<UserDTO>() {
+            @Override
+            public void onResponse(retrofit2.Call<UserDTO> call, retrofit2.Response<UserDTO> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onError("Error en el registro: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<UserDTO> call, Throwable t) {
+                callback.onError("Fallo de red: " + t.getMessage());
+            }
+        });
+    }
+
+    public Boolean isEmailValid(String email){
+        return email != null && !email.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    public Boolean isPasswordValid(String password){
+        if (password == null || password.isEmpty()) return false;
+        return Pattern.compile(PASSWORD_PATTERN).matcher(password).matches();
+    }
+
+    public boolean doPasswordsMatch(String pass, String confirmPass) {
+        if (pass == null || confirmPass == null) return false;
+        return pass.equals(confirmPass);
+    }
+
+
 }
