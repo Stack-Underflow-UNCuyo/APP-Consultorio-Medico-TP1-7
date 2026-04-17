@@ -75,6 +75,36 @@ public class AppointmentDAO implements BaseDAO<AppointmentDTO>{
         return listAppointments;
     }
 
+    public List<AppointmentDTO> getAllByPatient(long patientId) {
+        List<AppointmentDTO> listAppointments = new ArrayList<>();
+        String query = "SELECT * FROM appointments WHERE active = 1 AND id_patient = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(patientId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                AppointmentDTO appointment = (AppointmentDTO) DTOFactory.create(EntityType.APPOINTMENT, cursor);
+                if (appointment != null) listAppointments.add(appointment);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return listAppointments;
+    }
+
+    public List<AppointmentDTO> getAllByMedic(long medicId) {
+        List<AppointmentDTO> listAppointments = new ArrayList<>();
+        String query = "SELECT * FROM appointments WHERE active = 1 AND id_medic = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(medicId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                AppointmentDTO appointment = (AppointmentDTO) DTOFactory.create(EntityType.APPOINTMENT, cursor);
+                if (appointment != null) listAppointments.add(appointment);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return listAppointments;
+    }
+
     @Override
     public int update(AppointmentDTO appointment) {
         long idToUpdate = appointment.getId();

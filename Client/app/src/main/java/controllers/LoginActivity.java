@@ -30,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // 1. IMPORTANTE: Inicializar Retrofit aquí también
         RetrofitClient.init(this);
 
         initViews();

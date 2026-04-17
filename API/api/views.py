@@ -33,12 +33,15 @@ class AuthLoginView(APIView):
         else:
             role = "MEDIC"
 
+        name = user.get_full_name().strip() or user.username
+
         refresh = RefreshToken.for_user(user)
 
         return Response({
             "token": str(refresh.access_token),
             "role": role,
-            "email": email
+            "email": email,
+            "name": name
         }, status=status.HTTP_200_OK)
 
 class PatientViewSet(viewsets.ModelViewSet):
@@ -52,6 +55,16 @@ class MedicViewSet(viewsets.ModelViewSet):
 class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.filter(active=True)
     serializer_class = AppointmentSerializer
+
+    def by_patient(self, request, patientId=None):
+        appointments = self.queryset.filter(idPatient=patientId)
+        serializer = self.get_serializer(appointments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def by_medic(self, request, medicId=None):
+        appointments = self.queryset.filter(idMedic=medicId)
+        serializer = self.get_serializer(appointments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()

@@ -10,7 +10,7 @@ import android.util.Log;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "ConsultorioDB.db";
-    private static final int DATABASE_VERSION = 3; // Incremented for users table
+    private static final int DATABASE_VERSION = 4; // Incremented for medic email
 
     private static DatabaseHelper instance;
 
@@ -31,6 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "lastname TEXT, " +
                     "registration TEXT, " +
                     "speciality TEXT, " +
+                    "email TEXT, " + // Added email for medics
                     "active INTEGER)";
 
     private static final String CREATE_TABLE_APPOINTMENTS =

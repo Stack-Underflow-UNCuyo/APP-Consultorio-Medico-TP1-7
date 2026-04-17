@@ -9,6 +9,8 @@ public class TokenManager {
     private static final String KEY_TOKEN = "jwt_token";
     private static final String KEY_ROLE  = "user_role";
     private static final String KEY_EMAIL = "user_email";
+    private static final String KEY_NAME  = "user_name";
+    private static final String KEY_ID    = "user_id";
 
     private final SharedPreferences prefs;
 
@@ -17,11 +19,13 @@ public class TokenManager {
                 .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
-    public void saveSession(String token, String role, String email) {
+    public void saveSession(String token, String role, String email, String name, Long id) {
         prefs.edit()
                 .putString(KEY_TOKEN, token)
                 .putString(KEY_ROLE, role)
                 .putString(KEY_EMAIL, email)
+                .putString(KEY_NAME, name)
+                .putLong(KEY_ID, id != null ? id : -1L)
                 .apply();
     }
 
@@ -35,6 +39,14 @@ public class TokenManager {
 
     public String getEmail() {
         return prefs.getString(KEY_EMAIL, null);
+    }
+
+    public String getName() {
+        return prefs.getString(KEY_NAME, null);
+    }
+
+    public long getId() {
+        return prefs.getLong(KEY_ID, -1L);
     }
 
     public boolean isLoggedIn() {

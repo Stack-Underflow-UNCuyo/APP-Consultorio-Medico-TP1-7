@@ -2,7 +2,6 @@ package controllers;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,10 +16,10 @@ import network.RetrofitClient;
 import ui.medics.MedicFragment;
 import ui.mis_turnos.TurnosFragment;
 import ui.patients.PatientFragment;
+import ui.profile.ProfileFragment;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TITULO_TURNOS    = "Turnos";
     private static final String TITULO_PACIENTES = "Pacientes";
     private static final String TITULO_MEDICOS   = "Médicos";
+    private static final String TITULO_PERFIL    = "Perfil";
     private static final String KEY_NAV_ITEM = "nav_item_seleccionado";
 
     @Override
@@ -72,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_medicos) {
                 cargarFragmento(new MedicFragment(), TITULO_MEDICOS);
                 return true;
+            } else if (itemId == R.id.nav_perfil) {
+                cargarFragmento(new ProfileFragment(), TITULO_PERFIL);
+                return true;
             }
             return false;
         });
@@ -95,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
             bottomNav.getMenu().findItem(R.id.nav_pacientes).setVisible(false);
             bottomNav.getMenu().findItem(R.id.nav_medicos).setVisible(false);
         }
+        // El perfil siempre debe ser visible
+        bottomNav.getMenu().findItem(R.id.nav_perfil).setVisible(true);
     }
 
     private void cargarFragmento(Fragment fragment, String titulo) {

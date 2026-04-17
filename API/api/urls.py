@@ -11,5 +11,7 @@ router.register(r'users', UserViewSet)
 
 urlpatterns = [
     path('auth/login', AuthLoginView.as_view(), name='auth-login'),
+    path('appointments/patient/<int:patientId>', AppointmentViewSet.as_view({'get': 'by_patient'}), name='appointments-by-patient'),
+    path('appointments/medic/<int:medicId>', AppointmentViewSet.as_view({'get': 'by_medic'}), name='appointments-by-medic'),
     path('', include(router.urls)),
 ]

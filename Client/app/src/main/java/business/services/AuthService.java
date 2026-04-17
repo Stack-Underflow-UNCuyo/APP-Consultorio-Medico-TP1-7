@@ -54,7 +54,9 @@ public class AuthService {
                     tokenManager.saveSession(
                             body.getToken(),
                             body.getRole(),
-                            body.getEmail()
+                            body.getEmail(),
+                            body.getName(),
+                            body.getId()
                     );
                     RetrofitClient.reset();
                     RetrofitClient.init( context);

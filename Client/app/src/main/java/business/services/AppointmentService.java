@@ -49,6 +49,42 @@ public class AppointmentService {
         });
     }
 
+    public void getAppointmentsByPatient(long patientId, OnAppointmentsLoaded callback) {
+        apiService.getAppointmentsByPatient(patientId).enqueue(new Callback<List<AppointmentDTO>>() {
+            @Override
+            public void onResponse(Call<List<AppointmentDTO>> call, Response<List<AppointmentDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Error al cargar turnos del paciente: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<AppointmentDTO>> call, Throwable t) {
+                callback.onError("Fallo de red: " + t.getMessage());
+            }
+        });
+    }
+
+    public void getAppointmentsByMedic(long medicId, OnAppointmentsLoaded callback) {
+        apiService.getAppointmentsByMedic(medicId).enqueue(new Callback<List<AppointmentDTO>>() {
+            @Override
+            public void onResponse(Call<List<AppointmentDTO>> call, Response<List<AppointmentDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Error al cargar turnos del médico: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<AppointmentDTO>> call, Throwable t) {
+                callback.onError("Fallo de red: " + t.getMessage());
+            }
+        });
+    }
+
     public void registerAppointment(String date, String time, String idPatientStr, String idMedicStr, OnAppointmentSaved callback) {
         try {
             if (date == null || date.trim().isEmpty()) throw new Exception("La fecha es obligatoria");
@@ -65,7 +101,6 @@ public class AppointmentService {
                 throw new Exception("Error interno: Los IDs seleccionados no son válidos.");
             }
 
-            // Asumimos que StateAppointment.PENDING (o el enum que tengas) es el estado por defecto
             AppointmentDTO newAppt = new AppointmentDTO(date.trim(), time.trim(), idPatient, idMedic, StateAppointment.PENDING);
             newAppt.setActive(true);
 
