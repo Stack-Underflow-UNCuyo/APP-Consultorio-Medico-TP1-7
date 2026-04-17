@@ -9,9 +9,9 @@ import retrofit2.http.POST;
 
 public interface PatientApiService {
 
-    @GET("patients")
+    @GET("patients/")
     Call<List<PatientDTO>> getAllPatients();
 
-    @POST("patients")
+    @POST("patients/")
     Call<PatientDTO> createPatient(@Body PatientDTO patient);
 }

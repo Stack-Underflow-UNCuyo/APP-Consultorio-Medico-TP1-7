@@ -97,8 +97,21 @@ public class MedicFragment extends Fragment {
     }
 
     private void loadMedics(){
-        allMedics = medicService.getAllMedics();
-        applyCombinedFilters();
+        medicService.getAllMedics(new MedicService.OnMedicsLoaded() {
+            @Override
+            public void onSuccess(List<MedicDTO> medics) {
+                if (!isAdded() || getContext() == null) return;
+                allMedics = medics;
+                applyCombinedFilters();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     // Combined Filters
@@ -141,8 +154,6 @@ public class MedicFragment extends Fragment {
         TextInputEditText    etMatricula     = dialogView.findViewById(R.id.et_dialog_medic_registration);
         AutoCompleteTextView actvEspecialidad = dialogView.findViewById(R.id.actv_dialog_medic_speciality);
 
-        ChipGroup chipGroupEsp = dialogView.findViewById(R.id.chipgroup_especialidades);
-
         String[] especialidades = {
                 "Clínica Médica", "Cardiología", "Pediatría",
                 "Traumatología", "Dermatología", "Ginecología",
@@ -183,20 +194,40 @@ public class MedicFragment extends Fragment {
         dialog.setOnShowListener(dialogInterface -> {
             dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
                     .setOnClickListener(v -> {
+
+                        tilNombre.setError(null);
+                        tilApellido.setError(null);
+                        tilMatricula.setError(null);
+                        tilEspecialidad.setError(null);
+
                         try {
+                            String nombre = etNombre.getText() != null ? etNombre.getText().toString() : "";
+                            String apellido = etApellido.getText() != null ? etApellido.getText().toString() : "";
+                            String matricula = etMatricula.getText() != null ? etMatricula.getText().toString() : "";
+                            String especialidad = actvEspecialidad.getText() != null ? actvEspecialidad.getText().toString() : "";
+
                             medicService.registerMedic(
-                                    etNombre.getText().toString(),
-                                    etApellido.getText().toString(),
-                                    etMatricula.getText().toString(),
-                                    actvEspecialidad.getText().toString()
+                                    nombre,
+                                    apellido,
+                                    matricula,
+                                    especialidad,
+                                    new MedicService.OnMedicSaved() {
+                                        @Override
+                                        public void onSuccess() {
+                                            Toast.makeText(requireContext(), "Médico guardado en la nube", Toast.LENGTH_SHORT).show();
+                                            loadMedics();
+                                            dialog.dismiss();
+                                        }
+
+                                        @Override
+                                        public void onError(String errorMessage) {
+                                            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show();
+                                        }
+                                    }
                             );
 
-                            Toast.makeText(requireContext(), "Médico guardado", Toast.LENGTH_SHORT).show();
-                            loadMedics();
-                            dialog.dismiss();
-
                         } catch (Exception e) {
-                            Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(requireContext(), "Error inesperado: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
         });

@@ -49,19 +49,8 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         holder.tvDate.setText(appointment.getDate());
         holder.tvTime.setText(appointment.getTime());
 
-        PatientDTO patient = patientDAO.getById(appointment.getIdPatient());
-        if (patient != null) {
-            holder.tvName.setText(patient.getName() + " " + patient.getLastName());
-        } else {
-            holder.tvName.setText("Paciente no encontrado");
-        }
-
-        MedicDTO medic = medicDAO.getById(appointment.getIdMedic());
-        if (medic != null) {
-            holder.tvMedic.setText("Dr/a. " + medic.getName() + " " + medic.getLastName());
-        } else {
-            holder.tvMedic.setText("Médico no encontrado");
-        }
+        holder.tvName.setText(appointment.getPatientName());
+        holder.tvMedic.setText("Dr. " + appointment.getMedicName());
 
         // Set the state text into the state chip
         if (holder.chipStatus != null) {

@@ -6,53 +6,93 @@ import java.util.ArrayList;
 import java.util.List;
 import business.entities.AppointmentDTO;
 import business.entities.StateAppointment;
-import business.persistence.AppointmentDAO;
+import network.AppointmentApiService;
+import network.RetrofitClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AppointmentService {
 
-    private AppointmentDAO appointmentDAO;
+    private AppointmentApiService apiService;
+
+    // Interfaces para los Callbacks asíncronos
+    public interface OnAppointmentsLoaded {
+        void onSuccess(List<AppointmentDTO> appointments);
+        void onError(String errorMessage);
+    }
+
+    public interface OnAppointmentSaved {
+        void onSuccess();
+        void onError(String errorMessage);
+    }
 
     public AppointmentService(Context context) {
-        this.appointmentDAO = new AppointmentDAO(context);
+        this.apiService = RetrofitClient.getClient().create(AppointmentApiService.class);
     }
 
-    public List<AppointmentDTO> getAllAppointments() {
-        return appointmentDAO.getAll();
+    public void getAllAppointments(OnAppointmentsLoaded callback) {
+        apiService.getAllAppointments().enqueue(new Callback<List<AppointmentDTO>>() {
+            @Override
+            public void onResponse(Call<List<AppointmentDTO>> call, Response<List<AppointmentDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Error del servidor al cargar turnos: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<AppointmentDTO>> call, Throwable t) {
+                callback.onError("Fallo de red: " + t.getMessage());
+            }
+        });
     }
 
-    public long registerAppointment(String date, String time, String idPatientStr, String idMedicStr) throws Exception {
-
-        if (date == null || date.trim().isEmpty()) throw new Exception("La fecha es obligatoria");
-        if (time == null || time.trim().isEmpty()) throw new Exception("La hora es obligatoria");
-        if (idPatientStr == null || idPatientStr.trim().isEmpty()) throw new Exception("El ID del paciente es obligatorio");
-        if (idMedicStr == null || idMedicStr.trim().isEmpty()) throw new Exception("El ID del médico es obligatorio");
-
+    public void registerAppointment(String date, String time, String idPatientStr, String idMedicStr, OnAppointmentSaved callback) {
         try {
-            LocalDate.parse(date.trim()); // Si falla, va al catch
+            if (date == null || date.trim().isEmpty()) throw new Exception("La fecha es obligatoria");
+            if (time == null || time.trim().isEmpty()) throw new Exception("El horario es obligatorio");
+            if (idPatientStr == null || idPatientStr.trim().isEmpty()) throw new Exception("Debes seleccionar un paciente");
+            if (idMedicStr == null || idMedicStr.trim().isEmpty()) throw new Exception("Debes seleccionar un médico");
+
+            long idPatient;
+            long idMedic;
+            try {
+                idPatient = Long.parseLong(idPatientStr.trim());
+                idMedic = Long.parseLong(idMedicStr.trim());
+            } catch (NumberFormatException e) {
+                throw new Exception("Error interno: Los IDs seleccionados no son válidos.");
+            }
+
+            // Asumimos que StateAppointment.PENDING (o el enum que tengas) es el estado por defecto
+            AppointmentDTO newAppt = new AppointmentDTO(date.trim(), time.trim(), idPatient, idMedic, StateAppointment.PENDING);
+            newAppt.setActive(true);
+
+            apiService.createAppointment(newAppt).enqueue(new Callback<AppointmentDTO>() {
+                @Override
+                public void onResponse(Call<AppointmentDTO> call, Response<AppointmentDTO> response) {
+                    if (response.isSuccessful()) {
+                        callback.onSuccess();
+                    } else {
+                        callback.onError("Error del servidor al guardar el turno");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AppointmentDTO> call, Throwable t) {
+                    callback.onError("Fallo de red al guardar: " + t.getMessage());
+                }
+            });
+
         } catch (Exception e) {
-            throw new Exception("El formato de fecha debe ser YYYY-MM-DD");
+            callback.onError(e.getMessage());
         }
-
-        long idPatient;
-        long idMedic;
-        try {
-            idPatient = Long.parseLong(idPatientStr.trim());
-            idMedic = Long.parseLong(idMedicStr.trim());
-        } catch (NumberFormatException e) {
-            throw new Exception("Los IDs deben ser números válidos");
-        }
-
-        AppointmentDTO newAppt = new AppointmentDTO(date.trim(), time.trim(), idPatient, idMedic, StateAppointment.PENDING);
-        newAppt.setActive(true);
-
-        long id = appointmentDAO.insert(newAppt);
-        if (id == -1) {
-            throw new Exception("Error al guardar en la base de datos");
-        }
-        return id;
     }
 
     public List<AppointmentDTO> getPendingAppointments(List<AppointmentDTO> allAppointments) {
+        if (allAppointments == null) return new ArrayList<>();
+
         List<AppointmentDTO> pendingList = new ArrayList<>();
         LocalDate today = LocalDate.now();
 
@@ -63,7 +103,6 @@ public class AppointmentService {
                     pendingList.add(appt);
                 }
             } catch (Exception ignored) {
-                // fecha corrupta en la BD, se ignoramos
             }
         }
         return pendingList;

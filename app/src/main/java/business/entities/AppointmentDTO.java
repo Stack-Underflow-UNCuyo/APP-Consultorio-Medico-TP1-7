@@ -5,6 +5,8 @@ public class AppointmentDTO extends BaseDTO{
     private String time; // HH:MM
     private long idPatient;
     private long idMedic;
+    private String patientName;
+    private String medicName;
     private StateAppointment state;
 
     public AppointmentDTO(){
@@ -58,5 +60,7 @@ public class AppointmentDTO extends BaseDTO{
     public void setState(StateAppointment state) {
         this.state = state;
     }
+    public String getPatientName() { return patientName; }
+    public String getMedicName() { return medicName; }
 
 }

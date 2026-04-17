@@ -1,6 +1,5 @@
 package ui.patients;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,11 +23,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import business.entities.PatientDTO;
-import business.persistence.PatientDAO;
+import business.services.PatientService;
 
 public class PatientFragment extends Fragment {
     private RecyclerView rvPatients;
@@ -37,10 +35,10 @@ public class PatientFragment extends Fragment {
     private FloatingActionButton fab;
     private TextInputEditText tiSearchBar;
 
-    private PatientDAO patientDAO;
+    private PatientService patientService;
     private PatientAdapter patientAdapter;
     private List<PatientDTO> currentPatients;
-
+    private String currentSearchText = "";
 
     @Nullable
     @Override
@@ -55,43 +53,62 @@ public class PatientFragment extends Fragment {
 
         rvPatients.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        patientDAO = new PatientDAO(getContext());
+        patientService = new PatientService(getContext());
+
         loadPatients();
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDialogNewPatient();
-            }
-        });
+        fab.setOnClickListener(view1 -> showDialogNewPatient());
 
         tiSearchBar.addTextChangedListener(new TextWatcher() {
-            @Override public void afterTextChanged(Editable editable) {}
             @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                filterPatients(charSequence.toString());
+                currentSearchText = charSequence.toString();
+                applyFilter(); // Llamamos al método centralizado de UI
             }
+            @Override public void afterTextChanged(Editable editable) {}
         });
 
         return view;
     }
 
-    private void filterPatients(String txt){
-        if (currentPatients == null){return;}
-
-        List<PatientDTO> newList = new ArrayList<>();
-        String txtMin = txt.toLowerCase();
-
-        for (PatientDTO patient : currentPatients){
-            if ((patient.getName().toLowerCase().contains(txtMin)) ||
-            patient.getLastName().toLowerCase().contains(txtMin) ||
-            String.valueOf(patient.getDni()).contains(txtMin)){
-                newList.add(patient);
+    private void loadPatients() {
+        patientService.getAllPatients(new PatientService.OnPatientsLoaded() {
+            @Override
+            public void onSuccess(List<PatientDTO> patients) {
+                if (!isAdded() || getContext() == null) return;
+                currentPatients = patients;
+                applyFilter();
             }
-        }
 
-        if(patientAdapter != null){
-            patientAdapter.updateList(newList);
+            @Override
+            public void onError(String errorMessage) {
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void applyFilter() {
+        if (currentPatients == null) return;
+
+        List<PatientDTO> filteredList = patientService.filterPatients(currentPatients, currentSearchText);
+
+        tvCount.setText(filteredList.size() + " pacientes registrados");
+
+        if (filteredList.isEmpty()){
+            layoutEmpty.setVisibility(View.VISIBLE);
+            rvPatients.setVisibility(View.GONE);
+        } else {
+            layoutEmpty.setVisibility(View.GONE);
+            rvPatients.setVisibility(View.VISIBLE);
+
+            if (patientAdapter == null) {
+                patientAdapter = new PatientAdapter(filteredList);
+                rvPatients.setAdapter(patientAdapter);
+            } else {
+                patientAdapter.updateList(filteredList);
+            }
         }
     }
 
@@ -117,78 +134,36 @@ public class PatientFragment extends Fragment {
                 .create();
 
         dialog.setOnShowListener(dialogInterface -> {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                    .setOnClickListener(v -> {
-                        tilNombre.setError(null);
-                        tilApellido.setError(null);
-                        tilDni.setError(null);
-                        tilTelefono.setError(null);
-                        tilEmail.setError(null);
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
 
-                        String nombre   = etNombre.getText()   != null ? etNombre.getText().toString().trim()   : "";
-                        String apellido = etApellido.getText() != null ? etApellido.getText().toString().trim() : "";
-                        String dniStr   = etDni.getText()      != null ? etDni.getText().toString().trim()      : "";
-                        String telefono = etTelefono.getText() != null ? etTelefono.getText().toString().trim() : "";
-                        String email    = etEmail.getText()    != null ? etEmail.getText().toString().trim()    : "";
+                tilNombre.setError(null);
+                tilApellido.setError(null);
+                tilDni.setError(null);
+                tilTelefono.setError(null);
+                tilEmail.setError(null);
 
-                        boolean valido = true;
+                patientService.registerPatient(
+                        etNombre.getText() != null ? etNombre.getText().toString() : "",
+                        etApellido.getText() != null ? etApellido.getText().toString() : "",
+                        etDni.getText() != null ? etDni.getText().toString() : "",
+                        etTelefono.getText() != null ? etTelefono.getText().toString() : "",
+                        etEmail.getText() != null ? etEmail.getText().toString() : "",
+                        new PatientService.OnPatientSaved() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(requireContext(), "Paciente guardado en la nube", Toast.LENGTH_SHORT).show();
+                                loadPatients();
+                                dialog.dismiss();
+                            }
 
-                        if (nombre.isEmpty()) { tilNombre.setError("El nombre es obligatorio"); valido = false; }
-                        if (apellido.isEmpty()) { tilApellido.setError("El apellido es obligatorio"); valido = false; }
-
-                        Integer dni = null;
-                        if (dniStr.isEmpty()) {
-                            tilDni.setError("El DNI es obligatorio"); valido = false;
-                        } else {
-                            try {
-                                dni = Integer.valueOf(dniStr);
-                                if (dniStr.length() < 7 || dniStr.length() > 8) { tilDni.setError("DNI inválido (7 u 8 dígitos)"); valido = false; }
-                            } catch (NumberFormatException e) {
-                                tilDni.setError("DNI debe ser un número"); valido = false;
+                            @Override
+                            public void onError(String errorMessage) {
+                                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show();
                             }
                         }
-
-                        if (telefono.isEmpty()) { tilTelefono.setError("El teléfono es obligatorio"); valido = false; }
-
-                        if (email.isEmpty()) { tilEmail.setError("El email es obligatorio"); valido = false; }
-                        else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) { tilEmail.setError("Formato de email inválido"); valido = false; }
-
-                        if (!valido) return;
-
-                        PatientDTO newPatient = new PatientDTO(nombre, apellido, email, dni, telefono);
-                        PatientDAO dao = new PatientDAO(requireContext());
-                        long idGenerado = dao.insert(newPatient);
-
-                        if (idGenerado > 0) {
-                            Toast.makeText(requireContext(), "Paciente guardado correctamente", Toast.LENGTH_SHORT).show();
-                            loadPatients();
-                            dialog.dismiss();
-                        } else {
-                            Toast.makeText(requireContext(), "Error al guardar", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                );
+            });
         });
         dialog.show();
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void loadPatients(){
-        currentPatients = patientDAO.getAll();
-        tvCount.setText(currentPatients.size() + " pacientes registrados");
-
-        if (currentPatients.isEmpty()){
-            layoutEmpty.setVisibility(View.VISIBLE);
-            rvPatients.setVisibility(View.GONE);
-        } else {
-            layoutEmpty.setVisibility(View.GONE);
-            rvPatients.setVisibility(View.VISIBLE);
-
-            if (patientAdapter == null) {
-                patientAdapter = new PatientAdapter(currentPatients);
-                rvPatients.setAdapter(patientAdapter);
-            } else {
-                patientAdapter.updateList(currentPatients);
-            }
-        }
     }
 }

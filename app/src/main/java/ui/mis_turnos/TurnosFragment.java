@@ -24,7 +24,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -32,10 +31,9 @@ import java.util.Locale;
 import business.entities.AppointmentDTO;
 import business.entities.MedicDTO;
 import business.entities.PatientDTO;
-import business.entities.StateAppointment;
-import business.persistence.AppointmentDAO;
 import business.persistence.MedicDAO;
 import business.persistence.PatientDAO;
+import business.services.AppointmentService;
 
 public class TurnosFragment extends Fragment {
 
@@ -45,7 +43,7 @@ public class TurnosFragment extends Fragment {
     private TextView tvCountToday;
     private FloatingActionButton fab;
 
-    private AppointmentDAO appointmentDAO;
+    private AppointmentService appointmentService;
     private AppointmentAdapter appointmentAdapter;
     private List<AppointmentDTO> appointmentList;
     private List<AppointmentDTO> todayAppointments;
@@ -65,7 +63,7 @@ public class TurnosFragment extends Fragment {
         chipGroupFilter = view.findViewById(R.id.chipgroup_filter);
 
         rvAppointments.setLayoutManager(new LinearLayoutManager(getContext()));
-        appointmentDAO = new AppointmentDAO(getContext());
+        appointmentService = new AppointmentService(getContext());
 
         loadAppointments();
 
@@ -73,10 +71,10 @@ public class TurnosFragment extends Fragment {
 
         chipGroupFilter.setOnCheckedStateChangeListener((chipGroup, list) -> {
             if (!list.isEmpty()) {
-                for (Integer id : list){
-                    if (id == R.id.chip_pendientes){
+                for (Integer id : list) {
+                    if (id == R.id.chip_pendientes) {
                         updateViewList(pendingAppointments);
-                    } else if(id == R.id.chip_todos){
+                    } else if (id == R.id.chip_todos) {
                         updateViewList(appointmentList);
                     } else if (id == R.id.chip_group_hoy) {
                         updateViewList(todayAppointments);
@@ -88,7 +86,7 @@ public class TurnosFragment extends Fragment {
         return view;
     }
 
-    private void updateViewList(List<AppointmentDTO> list){
+    private void updateViewList(List<AppointmentDTO> list) {
         if (appointmentAdapter == null) {
             appointmentAdapter = new AppointmentAdapter(getContext(), list);
             rvAppointments.setAdapter(appointmentAdapter);
@@ -106,91 +104,144 @@ public class TurnosFragment extends Fragment {
     }
 
     private void loadAppointments() {
-        appointmentList = appointmentDAO.getAll();
-        pendingAppointments = new ArrayList<>();
-        todayAppointments = new ArrayList<>();
+        appointmentService.getAllAppointments(new AppointmentService.OnAppointmentsLoaded() {
+            @Override
+            public void onSuccess(List<AppointmentDTO> appointments) {
+                if (!isAdded() || getContext() == null) return;
 
-        LocalDate today = LocalDate.now();
-        int countToday = 0;
-        int countPending = 0;
+                appointmentList = appointments;
+                pendingAppointments = new ArrayList<>();
+                todayAppointments = new ArrayList<>();
 
-        for (AppointmentDTO appointment : appointmentList) {
-            try {
-                LocalDate apptDate = LocalDate.parse(appointment.getDate());
+                int countToday = 0;
+                int countFuture = 0;
+                java.time.LocalDate today = java.time.LocalDate.now();
 
-                if (apptDate.isEqual(today)) {
-                    countToday++;
-                    todayAppointments.add(appointment);
-                    pendingAppointments.add(appointment);
-                } else if (apptDate.isAfter(today)) {
-                    countPending++;
-                    pendingAppointments.add(appointment);
+                List<AppointmentDTO> allPending = appointmentService.getPendingAppointments(appointmentList);
+                for (AppointmentDTO appt : allPending) {
+                    try {
+                        java.time.LocalDate apptDate = java.time.LocalDate.parse(appt.getDate());
+                        pendingAppointments.add(appt);
+
+                        if (apptDate.isEqual(today)) {
+                            countToday++;
+                            todayAppointments.add(appt);
+                        } else {
+                            countFuture++;
+                        }
+                    } catch (Exception ignored) {}
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
-        tvCountToday.setText(String.valueOf(countToday));
-        tvCountPending.setText(String.valueOf(countPending));
-        
-        // Refresh with "All" by default
-        updateViewList(appointmentList);
+                tvCountToday.setText(String.valueOf(countToday));
+                tvCountPending.setText(String.valueOf(countFuture));
+
+                chipGroupFilter.check(R.id.chip_todos);
+                updateViewList(appointmentList);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     private void showDialogNewAppointment() {
         View dialogView = LayoutInflater.from(requireContext())
                 .inflate(R.layout.dialog_add_appointment, null);
 
-        TextInputLayout tilPatient = dialogView.findViewById(R.id.til_paciente);
-        TextInputLayout tilMedic = dialogView.findViewById(R.id.til_medico);
+        TextInputLayout tilPatient       = dialogView.findViewById(R.id.til_paciente);
+        TextInputLayout tilMedic         = dialogView.findViewById(R.id.til_medico);
         AutoCompleteTextView actvPatient = dialogView.findViewById(R.id.actv_paciente);
-        AutoCompleteTextView actvMedic = dialogView.findViewById(R.id.actv_medico);
-        CalendarView calendarView = dialogView.findViewById(R.id.calendar_view);
-        ChipGroup chipGroupTimes = dialogView.findViewById(R.id.chipgroup_horarios);
-        TextView tvSelectedDate  = dialogView.findViewById(R.id.tv_fecha_seleccionada);
-        TextView tvSelectedTime   = dialogView.findViewById(R.id.tv_hora_seleccionada);
+        AutoCompleteTextView actvMedic   = dialogView.findViewById(R.id.actv_medico);
+        CalendarView calendarView        = dialogView.findViewById(R.id.calendar_view);
+        ChipGroup chipGroupTimes         = dialogView.findViewById(R.id.chipgroup_horarios);
+        TextView tvSelectedDate          = dialogView.findViewById(R.id.tv_fecha_seleccionada);
+        TextView tvSelectedTime          = dialogView.findViewById(R.id.tv_hora_seleccionada);
 
-        // Final arrays to be modified inside lambdas
-        final long[] selectedIdPatient = { -1L };
-        final long[] selectedIdMedic = { -1L };
-        final String[] selectedDate = { "" };
-        final String[] selectedTime = { "" };
+        final long[]   selectedIdPatient = { -1L };
+        final long[]   selectedIdMedic   = { -1L };
+        final String[] selectedDate      = { "" };
+        final String[] selectedTime      = { "" };
 
-        // Patient List
-        PatientDAO patientDAO = new PatientDAO(requireContext());
-        List<PatientDTO> patients = patientDAO.getAll();
-        String[] patientNames = new String[patients.size()];
-        for (int i = 0; i < patients.size(); i++) {
-            patientNames[i] = patients.get(i).getName() + " " + patients.get(i).getLastName();
-        }
+        // --- 1. Pacientes ---
+        business.services.PatientService patientService = new business.services.PatientService(requireContext());
+        patientService.getAllPatients(new business.services.PatientService.OnPatientsLoaded() {
+            @Override
+            public void onSuccess(List<PatientDTO> patients) {
+                if (!isAdded()) return;
 
-        ArrayAdapter<String> adapterPatients = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, patientNames);
-        actvPatient.setAdapter(adapterPatients);
-        actvPatient.setOnItemClickListener((parent, v, position, id) -> {
-            selectedIdPatient[0] = patients.get(position).getId();
-            tilPatient.setError(null);
+                String[] patientNames = new String[patients.size()];
+                for (int i = 0; i < patients.size(); i++) {
+                    patientNames[i] = patients.get(i).getName() + " " + patients.get(i).getLastName();
+                }
+
+                ArrayAdapter<String> adapterPatients = new ArrayAdapter<>(
+                        requireContext(), android.R.layout.simple_dropdown_item_1line, patientNames);
+                actvPatient.setThreshold(0);
+                actvPatient.setAdapter(adapterPatients);
+                actvPatient.setOnClickListener(v -> actvPatient.showDropDown());
+                actvPatient.setOnFocusChangeListener((v, hasFocus) -> {
+                    if (hasFocus) actvPatient.showDropDown();
+                });
+                actvPatient.setOnItemClickListener((parent, v, position, id) -> {
+                    selectedIdPatient[0] = patients.get(position).getId();
+                    tilPatient.setError(null);
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (getContext() != null)
+                    Toast.makeText(getContext(), "Error cargando pacientes", Toast.LENGTH_SHORT).show();
+            }
         });
 
-        // Medic List
-        MedicDAO medicDAO = new MedicDAO(requireContext());
-        List<MedicDTO> medics = medicDAO.getAll();
-        String[] medicsNames = new String[medics.size()];
-        for (int i = 0; i < medics.size(); i++) {
-            medicsNames[i] = "Dr. " + medics.get(i).getName() + " " + medics.get(i).getLastName();
-        }
+        // --- 2. Médicos ---
+        business.services.MedicService medicService = new business.services.MedicService(requireContext());
+        medicService.getAllMedics(new business.services.MedicService.OnMedicsLoaded() {
+            @Override
+            public void onSuccess(List<MedicDTO> medics) {
+                if (!isAdded()) return;
 
-        ArrayAdapter<String> adapterMedicos = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, medicsNames);
-        actvMedic.setAdapter(adapterMedicos);
-        actvMedic.setOnItemClickListener((parent, v, position, id) -> {
-            selectedIdMedic[0] = medics.get(position).getId();
-            tilMedic.setError(null);
+                String[] medicsNames = new String[medics.size()];
+                for (int i = 0; i < medics.size(); i++) {
+                    medicsNames[i] = "Dr. " + medics.get(i).getName() + " " + medics.get(i).getLastName();
+                }
+
+                ArrayAdapter<String> adapterMedicos = new ArrayAdapter<>(
+                        requireContext(), android.R.layout.simple_dropdown_item_1line, medicsNames);
+                actvMedic.setThreshold(0);
+                actvMedic.setAdapter(adapterMedicos);
+                actvMedic.setOnClickListener(v -> actvMedic.showDropDown());
+                actvMedic.setOnFocusChangeListener((v, hasFocus) -> {
+                    if (hasFocus) actvMedic.showDropDown();
+                });
+                actvMedic.setOnItemClickListener((parent, v, position, id) -> {
+                    selectedIdMedic[0] = medics.get(position).getId();
+                    tilMedic.setError(null);
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (getContext() != null)
+                    Toast.makeText(getContext(), "Error cargando médicos", Toast.LENGTH_SHORT).show();
+            }
         });
 
-        // Initialize date with today
+        // --- Fecha ---
         java.util.Calendar cal = java.util.Calendar.getInstance();
-        selectedDate[0] = String.format(Locale.ROOT,"%04d-%02d-%02d", cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH) + 1, cal.get(java.util.Calendar.DAY_OF_MONTH));
-        tvSelectedDate.setText(String.format("Fecha: %02d/%02d/%04d", cal.get(java.util.Calendar.DAY_OF_MONTH), cal.get(java.util.Calendar.MONTH) + 1, cal.get(java.util.Calendar.YEAR)));
+        selectedDate[0] = String.format(Locale.ROOT, "%04d-%02d-%02d",
+                cal.get(java.util.Calendar.YEAR),
+                cal.get(java.util.Calendar.MONTH) + 1,
+                cal.get(java.util.Calendar.DAY_OF_MONTH));
+        tvSelectedDate.setText(String.format(Locale.ROOT, "Fecha: %02d/%02d/%04d",
+                cal.get(java.util.Calendar.DAY_OF_MONTH),
+                cal.get(java.util.Calendar.MONTH) + 1,
+                cal.get(java.util.Calendar.YEAR)));
 
         calendarView.setMinDate(System.currentTimeMillis() - 1000);
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
@@ -198,6 +249,7 @@ public class TurnosFragment extends Fragment {
             tvSelectedDate.setText(String.format(Locale.ROOT, "Fecha: %02d/%02d/%04d", dayOfMonth, month + 1, year));
         });
 
+        // --- Horarios ---
         chipGroupTimes.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (!checkedIds.isEmpty()) {
                 Chip chip = group.findViewById(checkedIds.get(0));
@@ -211,6 +263,7 @@ public class TurnosFragment extends Fragment {
             }
         });
 
+        // --- Dialog ---
         androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
                 .setPositiveButton("Guardar", null)
@@ -219,22 +272,54 @@ public class TurnosFragment extends Fragment {
 
         dialog.setOnShowListener(dialogInterface -> {
             dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+
+                tilPatient.setError(null);
+                tilMedic.setError(null);
                 boolean valido = true;
-                if (selectedIdPatient[0] == -1L) { tilPatient.setError("Seleccioná un paciente"); valido = false; }
-                if (selectedIdMedic[0] == -1L) { tilMedic.setError("Seleccioná un médico"); valido = false; }
-                if (selectedDate[0].isEmpty()) { Toast.makeText(requireContext(), "Seleccioná una fecha", Toast.LENGTH_SHORT).show(); valido = false; }
-                if (selectedTime[0].isEmpty()) { Toast.makeText(requireContext(), "Seleccioná un horario", Toast.LENGTH_SHORT).show(); valido = false; }
+
+                if (selectedIdPatient[0] == -1L) {
+                    tilPatient.setError("Seleccioná un paciente");
+                    valido = false;
+                }
+
+                if (selectedIdMedic[0] == -1L) {
+                    tilMedic.setError("Seleccioná un médico");
+                    valido = false;
+                }
+
+                if (selectedDate[0].isEmpty()) {
+                    Toast.makeText(requireContext(), "Seleccioná una fecha", Toast.LENGTH_SHORT).show();
+                    valido = false;
+                }
+
+                if (selectedTime[0].isEmpty()) {
+                    Toast.makeText(requireContext(), "Seleccioná un horario", Toast.LENGTH_SHORT).show();
+                    valido = false;
+                }
 
                 if (!valido) return;
 
-                AppointmentDTO newAppt = new AppointmentDTO(selectedDate[0], selectedTime[0], selectedIdPatient[0], selectedIdMedic[0], StateAppointment.PENDING);
-                if (appointmentDAO.insert(newAppt) > 0) {
-                    Toast.makeText(requireContext(), "Turno guardado", Toast.LENGTH_SHORT).show();
-                    loadAppointments();
-                    dialog.dismiss();
-                } else {
-                    Toast.makeText(requireContext(), "Error al guardar", Toast.LENGTH_SHORT).show();
-                }
+                appointmentService.registerAppointment(
+                        selectedDate[0],
+                        selectedTime[0],
+                        String.valueOf(selectedIdPatient[0]),
+                        String.valueOf(selectedIdMedic[0]),
+                        new AppointmentService.OnAppointmentSaved() {
+                            @Override
+                            public void onSuccess() {
+                                if (!isAdded()) return;
+                                Toast.makeText(requireContext(), "Turno guardado correctamente", Toast.LENGTH_SHORT).show();
+                                loadAppointments();
+                                dialog.dismiss();
+                            }
+
+                            @Override
+                            public void onError(String errorMessage) {
+                                if (!isAdded()) return;
+                                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                );
             });
         });
 
