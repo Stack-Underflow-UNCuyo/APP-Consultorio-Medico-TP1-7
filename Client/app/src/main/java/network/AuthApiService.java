@@ -12,6 +12,6 @@ public interface AuthApiService {
     @POST("auth/login")
     Call<LoginResponseDTO> login(@Body LoginRequestDTO request);
 
-    @POST("users/")
-    Call<UserDTO> register(@Body UserDTO user);
+    @POST("auth/register")
+    Call<LoginResponseDTO> register(@Body UserDTO user);
 }

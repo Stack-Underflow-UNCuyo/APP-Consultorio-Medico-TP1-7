@@ -77,10 +77,22 @@ public class AuthService {
     }
 
     public void register(UserDTO user, OnRegisterResult callback) {
-        apiService.register(user).enqueue(new retrofit2.Callback<UserDTO>() {
+        apiService.register(user).enqueue(new retrofit2.Callback<LoginResponseDTO>() {
             @Override
-            public void onResponse(retrofit2.Call<UserDTO> call, retrofit2.Response<UserDTO> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(retrofit2.Call<LoginResponseDTO> call, retrofit2.Response<LoginResponseDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponseDTO body = response.body();
+
+                    tokenManager.saveSession(
+                            body.getToken(),
+                            body.getRole(),
+                            body.getEmail(),
+                            body.getName(),
+                            body.getId()
+                    );
+                    RetrofitClient.reset();
+                    RetrofitClient.init(context);
+
                     callback.onSuccess();
                 } else {
                     callback.onError("Error en el registro: " + response.code());
@@ -88,7 +100,7 @@ public class AuthService {
             }
 
             @Override
-            public void onFailure(retrofit2.Call<UserDTO> call, Throwable t) {
+            public void onFailure(retrofit2.Call<LoginResponseDTO> call, Throwable t) {
                 callback.onError("Fallo de red: " + t.getMessage());
             }
         });

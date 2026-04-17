@@ -17,6 +17,7 @@ class Medic(models.Model):
     registration = models.CharField(max_length=50, unique=True) 
     speciality = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
+    email = models.EmailField(unique=True, null=True, blank=True)
 
     def __str__(self):
         return f"Dr. {self.lastName} ({self.speciality})"
