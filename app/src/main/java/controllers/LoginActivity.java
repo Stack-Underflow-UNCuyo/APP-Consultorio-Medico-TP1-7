@@ -18,6 +18,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import business.services.AuthService;
+
 public class LoginActivity extends AppCompatActivity {
 
     private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
@@ -61,18 +63,28 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (validateLoginInput()){
-                    // Proceed with login logic (e.g., call API, check database)
-                    Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
-                    // Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    // startActivity(intent);
-                    // finish();
+        loginBtn.setOnClickListener(view -> {
+            if (!validateLoginInput()) return;
 
+            String emailStr    = email.getText().toString().trim();
+            String passwordStr = password.getText().toString().trim();
+
+            AuthService authService = new AuthService(LoginActivity.this);
+            authService.login(emailStr, passwordStr, new AuthService.OnLoginResult() {
+                @Override
+                public void onSuccess(String role) {
+                    // ir al MainActivity
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
                 }
-            }
+
+                @Override
+                public void onError(String message) {
+                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+                }
+            });
         });
     }
 

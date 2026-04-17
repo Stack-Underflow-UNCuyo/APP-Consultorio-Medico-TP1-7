@@ -1,5 +1,6 @@
 package controllers;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -10,6 +11,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.compmovil.ejemplo01.R;
+
+import business.security.TokenManager;
+import network.RetrofitClient;
 import ui.medics.MedicFragment;
 import ui.mis_turnos.TurnosFragment;
 import ui.patients.PatientFragment;
@@ -34,10 +38,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        toolbar   = findViewById(R.id.toolbar);
-        bottomNav = findViewById(R.id.bottom_navigation);
+        // verificar sesion antes de mostrar la UI
+        TokenManager tokenManager = new TokenManager(this);
+        if (!tokenManager.isLoggedIn()) {
+            goToLanding();
+            return;
+        }
+
+        // Inicializar Retrofit con el token guardado
+        RetrofitClient.init(this);
+
+        // Configurar tabs según el rol
+        String role = tokenManager.getRole();
+        setupNavigationForRole(role);
 
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -79,6 +93,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void goToLanding() {
+        Intent intent = new Intent(this, LandingActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void setupNavigationForRole(String role) {
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+
+        if ("MEDIC".equals(role)) {
+            // El médico ve: Turnos, Pacientes, Médicos
+            bottomNav.getMenu().findItem(R.id.nav_pacientes).setVisible(true);
+            bottomNav.getMenu().findItem(R.id.nav_medicos).setVisible(true);
+        } else {
+            // El paciente solo ve: Turnos
+            bottomNav.getMenu().findItem(R.id.nav_pacientes).setVisible(false);
+            bottomNav.getMenu().findItem(R.id.nav_medicos).setVisible(false);
+        }
+
+        // Cargar fragment inicial
+        bottomNav.setSelectedItemId(R.id.nav_turnos);
+    }
 
     private void cargarFragmento(Fragment fragment, String titulo) {
         toolbar.setTitle(titulo);
@@ -121,10 +158,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void cerrarSesion() {
-        android.content.Intent intent = new android.content.Intent(this, LandingActivity.class);
-        intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-                | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+        new TokenManager(this).clearSession();
+        RetrofitClient.reset();
+        goToLanding();
     }
 }
