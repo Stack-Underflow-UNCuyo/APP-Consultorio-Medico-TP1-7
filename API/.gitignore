@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables
+.env
+
+# Migration folders (if you don't want to track them, uncomment)
+# */migrations/0*.py
+# !*/migrations/__init__.py
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
