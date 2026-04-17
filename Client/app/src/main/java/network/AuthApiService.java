@@ -12,6 +12,6 @@ public interface AuthApiService {
     @POST("auth/login")
     Call<LoginResponseDTO> login(@Body LoginRequestDTO request);
 
-    @POST("users/") // Django suele usar 'users' para el registro si usas el ViewSet
+    @POST("users/")
     Call<UserDTO> register(@Body UserDTO user);
 }

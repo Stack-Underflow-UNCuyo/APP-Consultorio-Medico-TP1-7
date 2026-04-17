@@ -7,12 +7,13 @@ public class UserDTO extends BaseDTO {
     private String phone;
     private String email;
     private String password;
+    private String role;
 
     public UserDTO() {
         super();
     }
 
-    public UserDTO(String name, String lastName, String dni, String phone, String email, String password) {
+    public UserDTO(String name, String lastName, String dni, String phone, String email, String password, String role) {
         super();
         this.name = name;
         this.lastName = lastName;
@@ -20,6 +21,7 @@ public class UserDTO extends BaseDTO {
         this.phone = phone;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public String getName() { return name; }
@@ -39,4 +41,12 @@ public class UserDTO extends BaseDTO {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

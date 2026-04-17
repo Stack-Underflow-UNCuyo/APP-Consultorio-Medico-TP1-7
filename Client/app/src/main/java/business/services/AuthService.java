@@ -25,7 +25,7 @@ public class AuthService {
 
 
     public interface OnLoginResult {
-        void onSuccess(String role);
+        void onSuccess(String token, String role);
         void onError(String message);
     }
 
@@ -59,7 +59,7 @@ public class AuthService {
                     RetrofitClient.reset();
                     RetrofitClient.init( context);
 
-                    callback.onSuccess(body.getRole());
+                    callback.onSuccess(body.getToken(), body.getRole());
                 } else if (response.code() == 401) {
                     callback.onError("Credenciales incorrectas");
                 } else {

@@ -14,7 +14,7 @@ class Patient(models.Model):
 class Medic(models.Model):
     name = models.CharField(max_length=100)
     lastName = models.CharField(max_length=100)
-    registration = models.CharField(max_length=50, unique=True) # Matrícula
+    registration = models.CharField(max_length=50, unique=True) 
     speciality = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
 
