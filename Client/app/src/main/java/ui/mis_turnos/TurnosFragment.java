@@ -164,6 +164,175 @@ public class TurnosFragment extends Fragment {
     }
 
     private void showDialogNewAppointment() {
-        // ... (el código del diálogo se mantiene igual)
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_add_appointment, null);
+
+        TextInputLayout tilPatient       = dialogView.findViewById(R.id.til_paciente);
+        TextInputLayout tilMedic         = dialogView.findViewById(R.id.til_medico);
+        AutoCompleteTextView actvPatient = dialogView.findViewById(R.id.actv_paciente);
+        AutoCompleteTextView actvMedic   = dialogView.findViewById(R.id.actv_medico);
+        CalendarView calendarView        = dialogView.findViewById(R.id.calendar_view);
+        ChipGroup chipGroupTimes         = dialogView.findViewById(R.id.chipgroup_horarios);
+        TextView tvSelectedDate          = dialogView.findViewById(R.id.tv_fecha_seleccionada);
+        TextView tvSelectedTime          = dialogView.findViewById(R.id.tv_hora_seleccionada);
+
+        final long[]   selectedIdPatient = { -1L };
+        final long[]   selectedIdMedic   = { -1L };
+        final String[] selectedDate      = { "" };
+        final String[] selectedTime      = { "" };
+
+        business.services.PatientService patientService = new business.services.PatientService(requireContext());
+        patientService.getAllPatients(new business.services.PatientService.OnPatientsLoaded() {
+            @Override
+            public void onSuccess(List<PatientDTO> patients) {
+                if (!isAdded()) return;
+
+                String[] patientNames = new String[patients.size()];
+                for (int i = 0; i < patients.size(); i++) {
+                    patientNames[i] = patients.get(i).getName() + " " + patients.get(i).getLastName();
+                }
+
+                ArrayAdapter<String> adapterPatients = new ArrayAdapter<>(
+                        requireContext(), android.R.layout.simple_dropdown_item_1line, patientNames);
+                actvPatient.setThreshold(0);
+                actvPatient.setAdapter(adapterPatients);
+                actvPatient.setOnClickListener(v -> actvPatient.showDropDown());
+                actvPatient.setOnFocusChangeListener((v, hasFocus) -> {
+                    if (hasFocus) actvPatient.showDropDown();
+                });
+                actvPatient.setOnItemClickListener((parent, v, position, id) -> {
+                    selectedIdPatient[0] = patients.get(position).getId();
+                    tilPatient.setError(null);
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (getContext() != null)
+                    Toast.makeText(getContext(), "Error cargando pacientes", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        business.services.MedicService medicService = new business.services.MedicService(requireContext());
+        medicService.getAllMedics(new business.services.MedicService.OnMedicsLoaded() {
+            @Override
+            public void onSuccess(List<MedicDTO> medics) {
+                if (!isAdded()) return;
+
+                String[] medicsNames = new String[medics.size()];
+                for (int i = 0; i < medics.size(); i++) {
+                    medicsNames[i] = "Dr. " + medics.get(i).getName() + " " + medics.get(i).getLastName();
+                }
+
+                ArrayAdapter<String> adapterMedicos = new ArrayAdapter<>(
+                        requireContext(), android.R.layout.simple_dropdown_item_1line, medicsNames);
+                actvMedic.setThreshold(0);
+                actvMedic.setAdapter(adapterMedicos);
+                actvMedic.setOnClickListener(v -> actvMedic.showDropDown());
+                actvMedic.setOnFocusChangeListener((v, hasFocus) -> {
+                    if (hasFocus) actvMedic.showDropDown();
+                });
+                actvMedic.setOnItemClickListener((parent, v, position, id) -> {
+                    selectedIdMedic[0] = medics.get(position).getId();
+                    tilMedic.setError(null);
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (getContext() != null)
+                    Toast.makeText(getContext(), "Error cargando médicos", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        selectedDate[0] = String.format(Locale.ROOT, "%04d-%02d-%02d",
+                cal.get(java.util.Calendar.YEAR),
+                cal.get(java.util.Calendar.MONTH) + 1,
+                cal.get(java.util.Calendar.DAY_OF_MONTH));
+        tvSelectedDate.setText(String.format(Locale.ROOT, "Fecha: %02d/%02d/%04d",
+                cal.get(java.util.Calendar.DAY_OF_MONTH),
+                cal.get(java.util.Calendar.MONTH) + 1,
+                cal.get(java.util.Calendar.YEAR)));
+
+        calendarView.setMinDate(System.currentTimeMillis() - 1000);
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            selectedDate[0] = String.format(Locale.ROOT, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+            tvSelectedDate.setText(String.format(Locale.ROOT, "Fecha: %02d/%02d/%04d", dayOfMonth, month + 1, year));
+        });
+
+        chipGroupTimes.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (!checkedIds.isEmpty()) {
+                Chip chip = group.findViewById(checkedIds.get(0));
+                if (chip != null) {
+                    selectedTime[0] = chip.getText().toString();
+                    tvSelectedTime.setText("Horario: " + selectedTime[0]);
+                }
+            } else {
+                selectedTime[0] = "";
+                tvSelectedTime.setText("Seleccioná un horario");
+            }
+        });
+
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setView(dialogView)
+                .setPositiveButton("Guardar", null)
+                .setNegativeButton("Cancelar", (d, which) -> d.dismiss())
+                .create();
+
+        dialog.setOnShowListener(dialogInterface -> {
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+
+                tilPatient.setError(null);
+                tilMedic.setError(null);
+                boolean valido = true;
+
+                if (selectedIdPatient[0] == -1L) {
+                    tilPatient.setError("Seleccioná un paciente");
+                    valido = false;
+                }
+
+                if (selectedIdMedic[0] == -1L) {
+                    tilMedic.setError("Seleccioná un médico");
+                    valido = false;
+                }
+
+                if (selectedDate[0].isEmpty()) {
+                    Toast.makeText(requireContext(), "Seleccioná una fecha", Toast.LENGTH_SHORT).show();
+                    valido = false;
+                }
+
+                if (selectedTime[0].isEmpty()) {
+                    Toast.makeText(requireContext(), "Seleccioná un horario", Toast.LENGTH_SHORT).show();
+                    valido = false;
+                }
+
+                if (!valido) return;
+
+                appointmentService.registerAppointment(
+                        selectedDate[0],
+                        selectedTime[0],
+                        String.valueOf(selectedIdPatient[0]),
+                        String.valueOf(selectedIdMedic[0]),
+                        new AppointmentService.OnAppointmentSaved() {
+                            @Override
+                            public void onSuccess() {
+                                if (!isAdded()) return;
+                                Toast.makeText(requireContext(), "Turno guardado correctamente", Toast.LENGTH_SHORT).show();
+                                loadAppointments();
+                                dialog.dismiss();
+                            }
+
+                            @Override
+                            public void onError(String errorMessage) {
+                                if (!isAdded()) return;
+                                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                );
+            });
+        });
+
+        dialog.show();
     }
 }

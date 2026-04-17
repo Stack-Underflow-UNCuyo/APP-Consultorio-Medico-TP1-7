@@ -59,10 +59,10 @@ class AuthRegisterView(APIView):
         email = data.get('email')
         password = data.get('password')
         role = data.get('role')
-        nombre = data.get('nombre', '')
-        apellido = data.get('apellido', '')
+        nombre = data.get('name', '')       
+        apellido = data.get('lastName', '') 
         dni = data.get('dni')
-        telefono = data.get('telefono', '')
+        telefono = data.get('phone', '')
 
         if not email or not password or not role:
             return Response({"error": "Faltan campos obligatorios (email, password, role)"}, status=status.HTTP_400_BAD_REQUEST)
